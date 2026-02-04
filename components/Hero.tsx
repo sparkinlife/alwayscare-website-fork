@@ -9,6 +9,7 @@ const Hero: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAmbulanceId, setSelectedAmbulanceId] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState('');
+  const [mapStatus, setMapStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   // Set today's date
   useEffect(() => {
@@ -32,63 +33,94 @@ const Hero: React.FC = () => {
       .catch(() => setDailyCases(142)); 
   }, []);
 
-  // Initialize Map
+  // Initialize Map with loading state and error handling
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    if (typeof (window as any).L === 'undefined') return;
 
-    const L = (window as any).L;
+    // Check for Leaflet with retry logic
+    const initializeMap = () => {
+      if (typeof (window as any).L === 'undefined') {
+        return false;
+      }
 
-    if (mapInstanceRef.current) return;
+      const L = (window as any).L;
 
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
-      attributionControl: false,
-      scrollWheelZoom: false, // Prevent map from capturing scroll on mobile
-      dragging: !L.Browser.mobile // Disable dragging on mobile initially to prevent scroll trap, or keep enabled if user expects it
-    }).setView([20.5937, 78.9629], 5);
-    
-    // Enable dragging on mobile touch if explicitly needed, but usually better to disable one-finger drag for full page scroll
-    if (L.Browser.mobile) {
-       map.dragging.enable();
-       map.tap.enable();
-    }
-    
-    mapInstanceRef.current = map;
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+      if (mapInstanceRef.current) return true;
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20
-    }).addTo(map);
+      try {
+        const map = L.map(mapContainerRef.current, {
+          zoomControl: false,
+          attributionControl: false,
+          scrollWheelZoom: false,
+          dragging: !L.Browser.mobile
+        }).setView([20.5937, 78.9629], 5);
 
-    const createIcon = (isSelected: boolean) => L.divIcon({
-      className: 'custom-div-icon',
-      html: `<div style="
-        background-color: ${isSelected ? '#b91c1c' : '#ef4444'}; 
-        width: ${isSelected ? '36px' : '28px'}; 
-        height: ${isSelected ? '36px' : '28px'}; 
-        border-radius: 50%; 
-        border: 2px solid white; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        color: white;
-        transition: all 0.3s ease;
-      ">
-        <svg xmlns="http://www.w3.org/2000/svg" width="${isSelected ? '18' : '14'}" height="${isSelected ? '18' : '14'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-      </div>`,
-      iconSize: isSelected ? [36, 36] : [28, 28],
-      iconAnchor: isSelected ? [18, 18] : [14, 14],
-    });
+        if (L.Browser.mobile) {
+          map.dragging.enable();
+          map.tap?.enable();
+        }
 
-    AMBULANCE_DATA.forEach(ambulance => {
-      L.marker([ambulance.lat, ambulance.lng], { icon: createIcon(false) })
-        .addTo(map)
-        .bindPopup(`<b>${ambulance.city}</b><br>${ambulance.phone}`);
-    });
+        mapInstanceRef.current = map;
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          maxZoom: 20
+        }).addTo(map);
+
+        const createIcon = (isSelected: boolean) => L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style="
+            background-color: ${isSelected ? '#b91c1c' : '#ef4444'};
+            width: ${isSelected ? '36px' : '28px'};
+            height: ${isSelected ? '36px' : '28px'};
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+          ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="${isSelected ? '18' : '14'}" height="${isSelected ? '18' : '14'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>`,
+          iconSize: isSelected ? [36, 36] : [28, 28],
+          iconAnchor: isSelected ? [18, 18] : [14, 14],
+        });
+
+        AMBULANCE_DATA.forEach(ambulance => {
+          L.marker([ambulance.lat, ambulance.lng], { icon: createIcon(false) })
+            .addTo(map)
+            .bindPopup(`<b>${ambulance.city}</b><br>${ambulance.phone}`);
+        });
+
+        setMapStatus('ready');
+        return true;
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
+        setMapStatus('error');
+        return false;
+      }
+    };
+
+    // Try to initialize immediately
+    if (initializeMap()) return;
+
+    // If Leaflet not loaded yet, retry with timeout
+    let retryCount = 0;
+    const maxRetries = 10;
+    const retryInterval = setInterval(() => {
+      retryCount++;
+      if (initializeMap()) {
+        clearInterval(retryInterval);
+      } else if (retryCount >= maxRetries) {
+        clearInterval(retryInterval);
+        setMapStatus('error');
+      }
+    }, 500);
 
     return () => {
+      clearInterval(retryInterval);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -128,7 +160,7 @@ const Hero: React.FC = () => {
           
           {/* 1. Header & Title */}
           <div className="mb-6 md:mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 text-red-600 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-3">
               <AlertCircle size={14} />
               <span>EMERGENCY RESPONSE</span>
             </div>
@@ -145,30 +177,36 @@ const Hero: React.FC = () => {
             
             {/* Card 1 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 flex flex-col justify-between h-28 md:h-32 hover:border-red-200 transition-colors">
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-200/50 self-start px-2 py-0.5 rounded">{currentDate}</div>
-              <div className="text-2xl md:text-3xl font-black text-slate-900 my-1">{dailyCases}</div>
-              <div className="text-[10px] md:text-xs text-slate-600 font-medium">Cases Treated Today</div>
+              <div className="text-xs text-slate-500 font-bold uppercase tracking-wider bg-slate-200/50 self-start px-2 py-0.5 rounded">{currentDate}</div>
+              <div className="text-2xl md:text-3xl font-black text-slate-900 my-1">
+                {dailyCases === '...' ? (
+                  <span className="inline-block w-16 h-8 bg-slate-200 rounded animate-pulse"></span>
+                ) : (
+                  dailyCases
+                )}
+              </div>
+              <div className="text-xs text-slate-600 font-medium">Cases Treated Today</div>
             </div>
 
             {/* Card 2 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 flex flex-col justify-between h-28 md:h-32 hover:border-red-200 transition-colors">
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">In Last 3 Years</div>
-              <div className="text-2xl md:text-3xl font-black text-red-600 my-1">1.5Lakh+</div>
-              <div className="text-[10px] md:text-xs text-slate-600 font-medium">Lives Saved</div>
+              <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">In Last 3 Years</div>
+              <div className="text-2xl md:text-3xl font-black text-red-600 my-1">1.5 Lakh+</div>
+              <div className="text-xs text-slate-600 font-medium">Lives Saved</div>
             </div>
 
             {/* Card 3 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 flex flex-col justify-between h-28 md:h-32 hover:border-red-200 transition-colors">
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Across India</div>
+              <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Across India</div>
               <div className="text-2xl md:text-3xl font-black text-slate-900 my-1">43+</div>
-              <div className="text-[10px] md:text-xs text-slate-600 font-medium">Ambulances & Clinics</div>
+              <div className="text-xs text-slate-600 font-medium">Ambulances & Clinics</div>
             </div>
 
             {/* Card 4 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 flex flex-col justify-between h-28 md:h-32 hover:border-red-200 transition-colors">
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">On Ground Daily</div>
+              <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">On Ground Daily</div>
               <div className="text-2xl md:text-3xl font-black text-slate-900 my-1">75+</div>
-              <div className="text-[10px] md:text-xs text-slate-600 font-medium">Vets & Paravets</div>
+              <div className="text-xs text-slate-600 font-medium">Vets & Paravets</div>
             </div>
 
           </div>
@@ -180,7 +218,7 @@ const Hero: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 Live Cases
               </h3>
-              <span className="text-[10px] md:text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
+              <span className="text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
             
             <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 max-h-[300px] lg:max-h-none">
@@ -189,22 +227,22 @@ const Hero: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                        Case #{item.id} 
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-normal whitespace-nowrap">{item.type}</span>
+                        Case #{item.id}
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-normal whitespace-nowrap">{item.type}</span>
                       </div>
                       <div className="text-xs text-slate-500 mt-1">{item.animal} • {item.location}</div>
                     </div>
-                    <div className="text-[10px] font-medium text-slate-400 whitespace-nowrap ml-2">{item.time}</div>
+                    <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{item.time}</div>
                   </div>
                   {/* Simulated Media Icons */}
                   <div className="flex gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
-                     <div className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
+                     <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
                         <Camera size={12} className="text-slate-600" /> Photos
                      </div>
-                     <div className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
+                     <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
                         <Video size={12} className="text-slate-600" /> Video
                      </div>
-                     <div className="flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
+                     <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {item.status}
                      </div>
                   </div>
@@ -235,11 +273,34 @@ const Hero: React.FC = () => {
         <div id="ambulance-map-col" className="w-full lg:w-[55%] relative bg-slate-100 flex flex-col lg:block order-2">
            
            {/* The Map Container */}
-           <div 
+           <div
              id="ambulance-map-container"
-             className="w-full h-[280px] lg:h-full z-0 shrink-0 shadow-md lg:shadow-none"
+             className="w-full h-[380px] lg:h-full z-0 shrink-0 shadow-md lg:shadow-none relative"
            >
              <div ref={mapContainerRef} className="w-full h-full" />
+
+             {/* Map Loading State */}
+             {mapStatus === 'loading' && (
+               <div className="absolute inset-0 bg-slate-100 flex flex-col items-center justify-center z-10">
+                 <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mb-4"></div>
+                 <p className="text-slate-600 font-medium">Loading map...</p>
+               </div>
+             )}
+
+             {/* Map Error State */}
+             {mapStatus === 'error' && (
+               <div className="absolute inset-0 bg-slate-100 flex flex-col items-center justify-center z-10 p-6 text-center">
+                 <MapPin className="w-16 h-16 text-slate-300 mb-4" />
+                 <p className="text-slate-700 font-bold text-lg mb-2">Map Unavailable</p>
+                 <p className="text-slate-500 text-sm mb-4">Please use the list below to find an ambulance near you.</p>
+                 <button
+                   onClick={() => window.location.reload()}
+                   className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                 >
+                   Try Again
+                 </button>
+               </div>
+             )}
            </div>
 
            {/* Desktop Floating List (Hidden on Mobile) */}
@@ -309,7 +370,7 @@ const Hero: React.FC = () => {
               </div>
 
               {/* Cards List - Internally Scrollable */}
-              <div className="px-4 pb-8 overflow-y-auto custom-scrollbar" style={{ maxHeight: '65vh' }}>
+              <div className="px-4 pb-8 overflow-y-auto custom-scrollbar max-h-[65vh]">
                  <div className="space-y-4">
                      {filteredAmbulances.map(amb => (
                         <div 
@@ -321,7 +382,7 @@ const Hero: React.FC = () => {
                                  <h3 className="font-bold text-lg text-slate-900">{amb.city} Ambulance</h3>
                                  <p className="text-slate-500 text-sm mt-0.5">+91 {amb.phone}</p>
                               </div>
-                              <div className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                              <div className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                  ACTIVE
                               </div>
