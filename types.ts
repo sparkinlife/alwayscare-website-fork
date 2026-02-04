@@ -6,6 +6,7 @@ export interface AmbulanceLocation {
   state: 'Gujarat' | 'Maharashtra' | 'Other' | 'NGO Partner';
   lat: number;
   lng: number;
+  type?: 'ambulance' | 'clinic';
 }
 
 export interface CaseStat {

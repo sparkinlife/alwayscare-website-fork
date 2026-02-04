@@ -46,6 +46,13 @@ export const AMBULANCE_DATA: AmbulanceLocation[] = [
   { id: '34', city: 'Vapi', area: 'Tinku memorial', phone: '8980838888', state: 'NGO Partner', lat: 20.3893, lng: 72.9106 },
 ];
 
+export const CLINIC_DATA: AmbulanceLocation[] = [
+  { id: 'c1', city: 'Mumbai', area: 'Ghatkopar', phone: '7463036303', state: 'Maharashtra', lat: 19.0860, lng: 72.9090, type: 'clinic' },
+  { id: 'c2', city: 'Mumbai', area: 'Kandivali', phone: '7304983822', state: 'Maharashtra', lat: 19.2045, lng: 72.8376, type: 'clinic' },
+  { id: 'c3', city: 'Rajkot', phone: '7567075680', state: 'Gujarat', lat: 22.3039, lng: 70.8022, type: 'clinic' },
+  { id: 'c4', city: 'Junagadh', phone: '1234567890', state: 'Gujarat', lat: 21.5222, lng: 70.4579, type: 'clinic' },
+];
+
 export const NAV_LINKS = [
   { name: 'Home', href: '#home' },
   { name: 'Live Impact', href: '#impact' },

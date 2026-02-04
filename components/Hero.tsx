@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Phone, MapPin, AlertCircle, Navigation, Search, Filter, Map as MapIcon, FileText, Video, Camera, ArrowRight, Heart, UserPlus } from 'lucide-react';
-import { AMBULANCE_DATA } from '../constants';
+import { AMBULANCE_DATA, CLINIC_DATA } from '../constants';
 
 const Hero: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -10,6 +10,7 @@ const Hero: React.FC = () => {
   const [selectedAmbulanceId, setSelectedAmbulanceId] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState('');
   const [mapStatus, setMapStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [activeTab, setActiveTab] = useState<'ambulance' | 'clinic'>('ambulance');
 
   // Set today's date
   useEffect(() => {
@@ -18,12 +19,13 @@ const Hero: React.FC = () => {
   }, []);
 
   // Filter logic
-  const filteredAmbulances = useMemo(() => {
-    return AMBULANCE_DATA.filter(amb => 
-      amb.city.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      (amb.area && amb.area.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredData = useMemo(() => {
+    const data = activeTab === 'ambulance' ? AMBULANCE_DATA : CLINIC_DATA;
+    return data.filter(item =>
+      item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.area && item.area.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [searchTerm]);
+  }, [searchTerm, activeTab]);
 
   // Fetch daily cases
   useEffect(() => {
@@ -150,16 +152,16 @@ const Hero: React.FC = () => {
   ];
 
   return (
-    <div id="home" className="relative bg-slate-50 flex flex-col pt-16 lg:pt-20 lg:h-screen lg:overflow-hidden">
+    <div id="home" className="relative bg-slate-50 flex flex-col pt-16 lg:h-screen lg:overflow-hidden">
       
       <div className="flex flex-col lg:flex-row w-full flex-1 lg:h-full">
         
         {/* LEFT COLUMN: Mission Control (Title, Stats, Live Feed) */}
         {/* Mobile: Natural scroll. Desktop: Internal scroll */}
-        <div className="w-full lg:w-[45%] flex flex-col p-5 md:p-6 lg:p-8 bg-white z-20 shadow-xl lg:overflow-y-auto custom-scrollbar order-1">
+        <div className="w-full lg:w-[45%] flex flex-col p-5 md:p-6 lg:p-8 bg-white z-20 shadow-xl lg:overflow-y-auto order-1">
           
           {/* 1. Header & Title */}
-          <div className="mb-6 md:mb-8">
+          <div className="mb-4 md:mb-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-3">
               <AlertCircle size={14} />
               <span>EMERGENCY RESPONSE</span>
@@ -173,7 +175,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* 2. Detailed Impact Stats Grid */}
-          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-6 md:mb-8">
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
             
             {/* Card 1 */}
             <div className="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 flex flex-col justify-between h-28 md:h-32 hover:border-red-200 transition-colors">
@@ -212,7 +214,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* 3. Live Cases Feed (Light Theme) */}
-          <div className="flex-1 bg-amber-50/50 border border-amber-100 rounded-2xl p-4 md:p-5 mb-6 flex flex-col min-h-[220px] shadow-sm">
+          <div className="flex-1 bg-amber-50/50 border border-amber-100 rounded-2xl p-4 md:p-5 mb-4 flex flex-col min-h-[180px] shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -221,7 +223,7 @@ const Hero: React.FC = () => {
               <span className="text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
             
-            <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 max-h-[300px] lg:max-h-none">
+            <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px] lg:max-h-none">
               {liveCases.map((item) => (
                 <div key={item.id} className="bg-white border border-slate-100 hover:border-red-200 p-3 rounded-xl transition-all shadow-sm cursor-pointer group">
                   <div className="flex justify-between items-start">
@@ -304,7 +306,7 @@ const Hero: React.FC = () => {
            </div>
 
            {/* Desktop Floating List (Hidden on Mobile) */}
-           <div className="absolute top-4 left-4 bottom-4 w-[340px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl z-[400] flex flex-col border border-slate-200 hidden lg:flex">
+           <div className="absolute top-4 left-4 bottom-4 w-[340px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl z-40 flex flex-col border border-slate-200 hidden lg:flex">
               
               {/* List Header */}
               <div className="p-4 border-b border-slate-100">
@@ -319,85 +321,132 @@ const Hero: React.FC = () => {
                   />
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <button className="flex-1 text-xs font-semibold py-1.5 bg-slate-900 text-white rounded-md shadow-sm">Ambulance</button>
-                  <button className="flex-1 text-xs font-semibold py-1.5 bg-slate-50 text-slate-500 hover:bg-slate-100 rounded-md border border-slate-200">Clinics</button>
+                  <button
+                    onClick={() => setActiveTab('ambulance')}
+                    className={`flex-1 text-xs font-semibold py-1.5 rounded-md shadow-sm transition-colors ${
+                      activeTab === 'ambulance'
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    Ambulance
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('clinic')}
+                    className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${
+                      activeTab === 'clinic'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    Clinics
+                  </button>
                 </div>
               </div>
 
               {/* List Body */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
-                {filteredAmbulances.map(amb => (
-                  <div 
-                    key={amb.id}
-                    onClick={() => flyToLocation(amb.lat, amb.lng, amb.id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      selectedAmbulanceId === amb.id 
-                      ? 'bg-red-50 border-red-200 ring-1 ring-red-200' 
-                      : 'bg-white border-slate-100 hover:border-red-200 hover:bg-slate-50 hover:shadow-sm'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900">{amb.city}</h4>
-                        <div className="text-xs text-slate-500 mt-0.5">{amb.area || amb.state}</div>
-                      </div>
-                      <a href={`tel:${amb.phone.replace(/\s/g, '')}`} className="bg-red-100 p-1.5 rounded-full text-red-600 hover:bg-red-600 hover:text-white transition-colors">
-                        <Phone size={14} />
-                      </a>
-                    </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {filteredData.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <p>No {activeTab === 'ambulance' ? 'ambulances' : 'clinics'} found{searchTerm && ` matching "${searchTerm}"`}</p>
                   </div>
-                ))}
+                ) : (
+                  filteredData.map(item => (
+                    <div
+                      key={item.id}
+                      onClick={() => flyToLocation(item.lat, item.lng, item.id)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        selectedAmbulanceId === item.id
+                        ? 'bg-red-50 border-red-200 ring-1 ring-red-200'
+                        : 'bg-white border-slate-100 hover:border-red-200 hover:bg-slate-50 hover:shadow-sm'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-900">{item.city}</h4>
+                          <div className="text-xs text-slate-500 mt-0.5">{item.area || item.state}</div>
+                        </div>
+                        <a href={`tel:${item.phone.replace(/\s/g, '')}`} className="bg-red-100 p-1.5 rounded-full text-red-600 hover:bg-red-600 hover:text-white transition-colors">
+                          <Phone size={14} />
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
            </div>
 
            {/* Mobile List Section (Visible only on Mobile) */}
            <div className="lg:hidden flex flex-col bg-slate-100 border-t border-slate-200">
-              
+
               {/* Filter/Search Bar for Mobile - Fixed top relative to this section */}
               <div className="p-4 pb-2 bg-slate-100 z-10 sticky top-0">
                 <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input 
-                      type="text" 
-                      placeholder="Search city (e.g. Surat)" 
+                    <input
+                      type="text"
+                      placeholder="Search city (e.g. Surat)"
                       className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+                  {/* Mobile Toggle Buttons */}
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => setActiveTab('ambulance')}
+                      className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${
+                        activeTab === 'ambulance'
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      Ambulance
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('clinic')}
+                      className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${
+                        activeTab === 'clinic'
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      Clinics
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Cards List - Internally Scrollable */}
-              <div className="px-4 pb-8 overflow-y-auto custom-scrollbar max-h-[65vh]">
+              <div className="px-4 pb-8 overflow-y-auto scrollbar-hide max-h-[65vh]">
                  <div className="space-y-4">
-                     {filteredAmbulances.map(amb => (
-                        <div 
-                           key={amb.id} 
-                           className={`bg-white p-4 rounded-xl shadow-sm border ${selectedAmbulanceId === amb.id ? 'border-red-500 ring-1 ring-red-100' : 'border-slate-200'}`}
+                     {filteredData.map(item => (
+                        <div
+                           key={item.id}
+                           className={`bg-white p-4 rounded-xl shadow-sm border ${selectedAmbulanceId === item.id ? 'border-red-500 ring-1 ring-red-100' : 'border-slate-200'}`}
                         >
                            <div className="flex justify-between items-start mb-3">
                               <div>
-                                 <h3 className="font-bold text-lg text-slate-900">{amb.city} Ambulance</h3>
-                                 <p className="text-slate-500 text-sm mt-0.5">+91 {amb.phone}</p>
+                                 <h3 className="font-bold text-lg text-slate-900">{item.city} {activeTab === 'ambulance' ? 'Ambulance' : 'Clinic'}</h3>
+                                 <p className="text-slate-500 text-sm mt-0.5">+91 {item.phone}</p>
                               </div>
                               <div className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                  ACTIVE
                               </div>
                            </div>
-                           
+
                            <div className="grid grid-cols-2 gap-3">
-                              <button 
-                                 onClick={() => flyToLocation(amb.lat, amb.lng, amb.id)}
+                              <button
+                                 onClick={() => flyToLocation(item.lat, item.lng, item.id)}
                                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors"
                               >
                                  <MapIcon size={16} />
                                  Show on Map
                               </button>
-                              <a 
-                                 href={`tel:${amb.phone.replace(/\s/g, '')}`} 
+                              <a
+                                 href={`tel:${item.phone.replace(/\s/g, '')}`}
                                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors shadow-sm shadow-red-200"
                               >
                                  <Phone size={16} className="fill-current" />
@@ -406,9 +455,9 @@ const Hero: React.FC = () => {
                            </div>
                         </div>
                      ))}
-                     {filteredAmbulances.length === 0 && (
+                     {filteredData.length === 0 && (
                         <div className="text-center py-8 text-slate-500 bg-white rounded-xl border border-slate-200 border-dashed">
-                           <p>No ambulances found matching "{searchTerm}"</p>
+                           <p>No {activeTab === 'ambulance' ? 'ambulances' : 'clinics'} found{searchTerm && ` matching "${searchTerm}"`}</p>
                         </div>
                      )}
                  </div>
