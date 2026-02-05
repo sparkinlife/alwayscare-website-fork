@@ -22,6 +22,18 @@ const formatStatus = (status: string): string => {
   return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 };
 
+// Calculate distance between two points using Haversine formula
+const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 interface LiveCase {
   id: string;
   caseId: string;
@@ -47,6 +59,7 @@ const Hero: React.FC = () => {
   const [liveGpsData, setLiveGpsData] = useState<Map<string, {lat: number, lng: number}>>(new Map());
   const [liveCases, setLiveCases] = useState<LiveCase[]>([]);
   const [liveCasesLoading, setLiveCasesLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
 
   // Set today's date
   useEffect(() => {
@@ -54,14 +67,41 @@ const Hero: React.FC = () => {
     setCurrentDate(date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
   }, []);
 
-  // Filter logic
+  // Get user's location for sorting ambulances by distance
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => console.log('Geolocation denied or unavailable:', error.message),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  }, []);
+
+  // Filter and sort by distance logic
   const filteredData = useMemo(() => {
     const data = activeTab === 'ambulance' ? AMBULANCE_DATA : CLINIC_DATA;
-    return data.filter(item =>
+    let filtered = data.filter(item =>
       item.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.area && item.area.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [searchTerm, activeTab]);
+
+    // Sort by distance if user location is available
+    if (userLocation) {
+      filtered = [...filtered].sort((a, b) => {
+        const distA = calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng);
+        const distB = calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng);
+        return distA - distB;
+      });
+    }
+
+    return filtered;
+  }, [searchTerm, activeTab, userLocation]);
 
   // Fetch daily cases
   useEffect(() => {
