@@ -31,6 +31,7 @@ interface LiveCase {
   status: string;
   caseDate: string;
   preTreatmentPhoto: string | null;
+  postTreatmentVideo: string | null;
 }
 
 const Hero: React.FC = () => {
@@ -114,11 +115,12 @@ const Hero: React.FC = () => {
                 id: c.id,
                 caseId: c.caseId,
                 animalType: c.animalType || 'Unknown',
-                condition: c.condition || 'Unknown',
+                condition: c.condition || 'NORMAL',
                 siteName: site.siteName || 'Unknown',
-                status: c.status || 'NORMAL',
+                status: c.status || 'PENDING',
                 caseDate: c.caseDate,
                 preTreatmentPhoto: c.preTreatmentPhoto || null,
+                postTreatmentVideo: c.postTreatmentPhotosAndVideosFolderURL || null,
               });
             });
           }
@@ -359,9 +361,15 @@ const Hero: React.FC = () => {
                             <Camera size={12} className="text-slate-400" /> No Photos
                          </div>
                        )}
-                       <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
-                          <Video size={12} className="text-slate-600" /> Video
-                       </div>
+                       {item.postTreatmentVideo ? (
+                         <a href={item.postTreatmentVideo} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded hover:bg-purple-100 transition-colors whitespace-nowrap border border-purple-100">
+                            <Video size={12} className="text-purple-600" /> Video
+                         </a>
+                       ) : (
+                         <div className="flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">
+                            <Video size={12} className="text-slate-400" /> No Video
+                         </div>
+                       )}
                        <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {formatStatus(item.status)}
                        </div>
