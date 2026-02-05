@@ -5,6 +5,7 @@ import { AMBULANCE_DATA, CLINIC_DATA } from '../constants';
 const Hero: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<Map<string, any>>(new Map());
   const [dailyCases, setDailyCases] = useState<number | string>('...');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAmbulanceId, setSelectedAmbulanceId] = useState<string | null>(null);
@@ -32,7 +33,7 @@ const Hero: React.FC = () => {
   useEffect(() => {
     fetch('https://api-alwayscare.arham.org/api/cases/today/summary')
       .then(res => res.json())
-      .then(data => setDailyCases(data.total_cases))
+      .then(data => setDailyCases(data.totalCases))
       .catch(() => setDailyCases(142));
   }, []);
 
@@ -53,6 +54,18 @@ const Hero: React.FC = () => {
       })
       .catch(err => console.error('Failed to fetch live GPS data:', err));
   }, []);
+
+  // Update marker positions when live GPS data arrives
+  useEffect(() => {
+    if (liveGpsData.size === 0) return;
+
+    liveGpsData.forEach((coords, phone) => {
+      const marker = markersRef.current.get(phone);
+      if (marker) {
+        marker.setLatLng([coords.lat, coords.lng]);
+      }
+    });
+  }, [liveGpsData]);
 
   // Initialize Map with loading state and error handling
   useEffect(() => {
@@ -110,9 +123,12 @@ const Hero: React.FC = () => {
         });
 
         AMBULANCE_DATA.forEach(ambulance => {
-          L.marker([ambulance.lat, ambulance.lng], { icon: createIcon(false) })
+          const marker = L.marker([ambulance.lat, ambulance.lng], { icon: createIcon(false) })
             .addTo(map)
             .bindPopup(`<b>${ambulance.city}</b><br>${ambulance.phone}`);
+          // Store marker with phone as key for later updates
+          const normalizedPhone = ambulance.phone.replace(/\s/g, '');
+          markersRef.current.set(normalizedPhone, marker);
         });
 
         setMapStatus('ready');
