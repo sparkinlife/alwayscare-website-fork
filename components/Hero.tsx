@@ -2,6 +2,36 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Phone, MapPin, AlertCircle, Navigation, Search, Filter, Map as MapIcon, FileText, Video, Camera, ArrowRight, Heart, UserPlus } from 'lucide-react';
 import { AMBULANCE_DATA, CLINIC_DATA } from '../constants';
 
+// Helper function to format time ago
+const formatTimeAgo = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min ago`;
+  if (diffHours < 24) return `${diffHours} hr ago`;
+  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+};
+
+// Helper to format status for display
+const formatStatus = (status: string): string => {
+  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+};
+
+interface LiveCase {
+  id: string;
+  caseId: string;
+  animalType: string;
+  condition: string;
+  siteName: string;
+  status: string;
+  createdAt: string;
+}
+
 const Hero: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -13,6 +43,8 @@ const Hero: React.FC = () => {
   const [mapStatus, setMapStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeTab, setActiveTab] = useState<'ambulance' | 'clinic'>('ambulance');
   const [liveGpsData, setLiveGpsData] = useState<Map<string, {lat: number, lng: number}>>(new Map());
+  const [liveCases, setLiveCases] = useState<LiveCase[]>([]);
+  const [liveCasesLoading, setLiveCasesLoading] = useState(true);
 
   // Set today's date
   useEffect(() => {
@@ -66,6 +98,39 @@ const Hero: React.FC = () => {
       }
     });
   }, [liveGpsData]);
+
+  // Fetch live cases from serverless function
+  useEffect(() => {
+    fetch('/.netlify/functions/live-cases')
+      .then(res => res.json())
+      .then((data: any[]) => {
+        // Flatten cases from all sites and sort by date
+        const allCases: LiveCase[] = [];
+        data.forEach((site: any) => {
+          if (site.cases && Array.isArray(site.cases)) {
+            site.cases.forEach((c: any) => {
+              allCases.push({
+                id: c.id,
+                caseId: c.caseId,
+                animalType: c.animalType || 'Unknown',
+                condition: c.condition || 'Unknown',
+                siteName: site.siteName || 'Unknown',
+                status: c.status || 'PENDING',
+                createdAt: c.createdAt || c.caseDate,
+              });
+            });
+          }
+        });
+        // Sort by date descending and take latest 10
+        allCases.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setLiveCases(allCases.slice(0, 10));
+        setLiveCasesLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch live cases:', err);
+        setLiveCasesLoading(false);
+      });
+  }, []);
 
   // Initialize Map with loading state and error handling
   useEffect(() => {
@@ -185,13 +250,6 @@ const Hero: React.FC = () => {
     }
   };
 
-  // Mock Data for "Live Rescue Feed" - Simulating your backend
-  const liveCases = [
-    { id: 2045, type: 'Fracture', animal: 'Stray Dog', location: 'Andheri, Mumbai', time: '10 min ago', status: 'Admitted' },
-    { id: 2044, type: 'Viral Infection', animal: 'Calf', location: 'Gondal', time: '25 min ago', status: 'Treatment Started' },
-    { id: 2043, type: 'Accident', animal: 'Cat', location: 'Vesu, Surat', time: '42 min ago', status: 'Ambulance dispatched' },
-    { id: 2042, type: 'Dehydration', animal: 'Pigeon', location: 'Ahmedabad', time: '1 hr ago', status: 'Released' },
-  ];
 
   return (
     <div id="home" className="relative bg-slate-50 flex flex-col pt-16 lg:h-screen lg:overflow-hidden">
@@ -266,32 +324,43 @@ const Hero: React.FC = () => {
             </div>
             
             <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px] lg:max-h-none">
-              {liveCases.map((item) => (
-                <div key={item.id} className="bg-white border border-slate-100 hover:border-red-200 p-3 rounded-xl transition-all shadow-sm cursor-pointer group">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                        Case #{item.id}
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-normal whitespace-nowrap">{item.type}</span>
+              {liveCasesLoading ? (
+                // Loading skeleton
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="bg-white border border-slate-100 p-3 rounded-xl animate-pulse">
+                    <div className="h-4 bg-slate-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-3 bg-slate-100 rounded w-2/3"></div>
+                  </div>
+                ))
+              ) : liveCases.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">No cases found</div>
+              ) : (
+                liveCases.map((item) => (
+                  <div key={item.id} className="bg-white border border-slate-100 hover:border-red-200 p-3 rounded-xl transition-all shadow-sm cursor-pointer group">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                          Case #{item.caseId}
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-normal whitespace-nowrap">{item.condition}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">{item.animalType} • {item.siteName}</div>
                       </div>
-                      <div className="text-xs text-slate-500 mt-1">{item.animal} • {item.location}</div>
+                      <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{formatTimeAgo(item.createdAt)}</div>
                     </div>
-                    <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{item.time}</div>
+                    <div className="flex gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
+                       <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
+                          <Camera size={12} className="text-slate-600" /> Photos
+                       </div>
+                       <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
+                          <Video size={12} className="text-slate-600" /> Video
+                       </div>
+                       <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {formatStatus(item.status)}
+                       </div>
+                    </div>
                   </div>
-                  {/* Simulated Media Icons */}
-                  <div className="flex gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
-                     <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
-                        <Camera size={12} className="text-slate-600" /> Photos
-                     </div>
-                     <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
-                        <Video size={12} className="text-slate-600" /> Video
-                     </div>
-                     <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {item.status}
-                     </div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
             <button className="w-full mt-3 text-xs text-center text-slate-500 hover:text-red-600 font-medium flex items-center justify-center gap-1 transition-colors py-2">
               View All 150+ Daily Cases <ArrowRight size={12} />
