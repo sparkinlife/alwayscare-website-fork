@@ -29,7 +29,8 @@ interface LiveCase {
   condition: string;
   siteName: string;
   status: string;
-  createdAt: string;
+  caseDate: string;
+  preTreatmentPhoto: string | null;
 }
 
 const Hero: React.FC = () => {
@@ -115,14 +116,15 @@ const Hero: React.FC = () => {
                 animalType: c.animalType || 'Unknown',
                 condition: c.condition || 'Unknown',
                 siteName: site.siteName || 'Unknown',
-                status: c.status || 'PENDING',
-                createdAt: c.createdAt || c.caseDate,
+                status: c.status || 'NORMAL',
+                caseDate: c.caseDate,
+                preTreatmentPhoto: c.preTreatmentPhoto || null,
               });
             });
           }
         });
-        // Sort by date descending and take latest 10
-        allCases.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        // Sort by caseDate descending (most recent first) and take latest 10
+        allCases.sort((a, b) => new Date(b.caseDate).getTime() - new Date(a.caseDate).getTime());
         setLiveCases(allCases.slice(0, 10));
         setLiveCasesLoading(false);
       })
@@ -345,12 +347,18 @@ const Hero: React.FC = () => {
                         </div>
                         <div className="text-xs text-slate-500 mt-1">{item.animalType} • {item.siteName}</div>
                       </div>
-                      <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{formatTimeAgo(item.createdAt)}</div>
+                      <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{formatTimeAgo(item.caseDate)}</div>
                     </div>
                     <div className="flex gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
-                       <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
-                          <Camera size={12} className="text-slate-600" /> Photos
-                       </div>
+                       {item.preTreatmentPhoto ? (
+                         <a href={item.preTreatmentPhoto} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors whitespace-nowrap border border-blue-100">
+                            <Camera size={12} className="text-blue-600" /> Photos
+                         </a>
+                       ) : (
+                         <div className="flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">
+                            <Camera size={12} className="text-slate-400" /> No Photos
+                         </div>
+                       )}
                        <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors whitespace-nowrap">
                           <Video size={12} className="text-slate-600" /> Video
                        </div>
