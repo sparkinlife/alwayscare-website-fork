@@ -208,7 +208,7 @@ const Hero: React.FC = () => {
               <AlertCircle size={14} />
               <span>EMERGENCY RESPONSE</span>
             </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               India's Fast & Free <br /><span className="text-red-600">Animal Ambulance Network</span>
             </h1>
             <p className="text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -248,7 +248,7 @@ const Hero: React.FC = () => {
 
             {/* Card 4 */}
             <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
-              <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">On Ground Daily</div>
+              <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">On Ground</div>
               <div className="text-xl md:text-2xl font-black text-slate-900">75+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Vets & Paravets</div>
             </div>
