@@ -243,7 +243,7 @@ const Hero: React.FC = () => {
             <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Across India</div>
               <div className="text-xl md:text-2xl font-black text-slate-900">43+</div>
-              <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Ambulances & Clinics</div>
+              <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Ambulance & Clinics</div>
             </div>
 
             {/* Card 4 */}
