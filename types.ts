@@ -34,3 +34,24 @@ export enum LoadingState {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR'
 }
+
+export interface LiveCase {
+  id: string;
+  caseId: string;
+  caseDate: string;
+  animalType: string;
+  address: string | null;
+  informerName: string | null;
+  status: string;
+  caseType: string | null;
+  condition: string;
+  doctorObservation: string | null;
+  affectedBodyPart: string | null;
+  treatmentGiven: string | null;
+  medicationDosage: string | null;
+  recommendation: string | null;
+  preTreatmentPhoto: string | null;
+  postTreatmentPhotosAndVideosFolderURL: string | null;
+  createdAt: string | null;
+  siteName: string;
+}

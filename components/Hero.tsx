@@ -1,26 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Phone, MapPin, AlertCircle, Navigation, Search, Filter, Map as MapIcon, FileText, Video, Camera, ArrowRight, Heart, UserPlus } from 'lucide-react';
+import { Phone, MapPin, AlertCircle, Search, Map as MapIcon, ArrowRight, Heart, UserPlus } from 'lucide-react';
 import { AMBULANCE_DATA, CLINIC_DATA } from '../constants';
-
-// Helper function to format time ago
-const formatTimeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} min ago`;
-  if (diffHours < 24) return `${diffHours} hr ago`;
-  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-};
-
-// Helper to format status for display
-const formatStatus = (status: string): string => {
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-};
+import { LiveCase } from '../types';
+import CaseCard from './CaseCard';
+import CaseModal from './CaseModal';
 
 // Calculate distance between two points using Haversine formula
 const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
@@ -33,18 +16,6 @@ const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: numbe
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 };
-
-interface LiveCase {
-  id: string;
-  caseId: string;
-  animalType: string;
-  condition: string;
-  siteName: string;
-  status: string;
-  caseDate: string;
-  preTreatmentPhoto: string | null;
-  postTreatmentVideo: string | null;
-}
 
 const Hero: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +30,7 @@ const Hero: React.FC = () => {
   const [liveGpsData, setLiveGpsData] = useState<Map<string, {lat: number, lng: number}>>(new Map());
   const [liveCases, setLiveCases] = useState<LiveCase[]>([]);
   const [liveCasesLoading, setLiveCasesLoading] = useState(true);
+  const [selectedCase, setSelectedCase] = useState<LiveCase | null>(null);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
 
   // Set today's date
@@ -146,7 +118,6 @@ const Hero: React.FC = () => {
     fetch('/.netlify/functions/live-cases')
       .then(res => res.json())
       .then((data: any[]) => {
-        // Flatten cases from all sites and sort by date
         const allCases: LiveCase[] = [];
         data.forEach((site: any) => {
           if (site.cases && Array.isArray(site.cases)) {
@@ -154,20 +125,28 @@ const Hero: React.FC = () => {
               allCases.push({
                 id: c.id,
                 caseId: c.caseId,
-                animalType: c.animalType || 'Unknown',
-                condition: c.condition || 'NORMAL',
-                siteName: site.siteName || 'Unknown',
-                status: c.status || 'PENDING',
                 caseDate: c.caseDate,
+                animalType: c.animalType || 'Unknown',
+                address: c.address || null,
+                informerName: c.informerName || null,
+                status: c.status || 'PENDING',
+                caseType: c.caseType || null,
+                condition: c.condition || 'NORMAL',
+                doctorObservation: c.doctorObservation || null,
+                affectedBodyPart: c.affectedBodyPart || null,
+                treatmentGiven: c.treatmentGiven || null,
+                medicationDosage: c.medicationDosage || null,
+                recommendation: c.recommendation || null,
                 preTreatmentPhoto: c.preTreatmentPhoto || null,
-                postTreatmentVideo: c.postTreatmentPhotosAndVideosFolderURL || null,
+                postTreatmentPhotosAndVideosFolderURL: c.postTreatmentPhotosAndVideosFolderURL || null,
+                createdAt: c.createdAt || null,
+                siteName: site.siteName || 'Unknown',
               });
             });
           }
         });
-        // Sort by caseDate descending (most recent first) and take latest 10
         allCases.sort((a, b) => new Date(b.caseDate).getTime() - new Date(a.caseDate).getTime());
-        setLiveCases(allCases.slice(0, 10));
+        setLiveCases(allCases.slice(0, 6));
         setLiveCasesLoading(false);
       })
       .catch(err => {
@@ -380,41 +359,7 @@ const Hero: React.FC = () => {
                 <div className="text-center py-8 text-slate-500">No cases found</div>
               ) : (
                 liveCases.map((item) => (
-                  <div key={item.id} className="bg-white border border-slate-100 hover:border-red-200 p-3 rounded-xl transition-all shadow-sm cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                          Case #{item.caseId}
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-normal whitespace-nowrap">{item.condition}</span>
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">{item.animalType} • {item.siteName}</div>
-                      </div>
-                      <div className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2">{formatTimeAgo(item.caseDate)}</div>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
-                       {item.preTreatmentPhoto ? (
-                         <a href={item.preTreatmentPhoto} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors whitespace-nowrap border border-blue-100">
-                            <Camera size={12} className="text-blue-600" /> Photos
-                         </a>
-                       ) : (
-                         <div className="flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">
-                            <Camera size={12} className="text-slate-400" /> No Photos
-                         </div>
-                       )}
-                       {item.postTreatmentVideo ? (
-                         <a href={item.postTreatmentVideo} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded hover:bg-purple-100 transition-colors whitespace-nowrap border border-purple-100">
-                            <Video size={12} className="text-purple-600" /> Video
-                         </a>
-                       ) : (
-                         <div className="flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">
-                            <Video size={12} className="text-slate-400" /> No Video
-                         </div>
-                       )}
-                       <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 whitespace-nowrap">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {formatStatus(item.status)}
-                       </div>
-                    </div>
-                  </div>
+                  <CaseCard key={item.id} liveCase={item} onSelect={setSelectedCase} />
                 ))
               )}
             </div>
@@ -633,6 +578,11 @@ const Hero: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Case Detail Modal */}
+      {selectedCase && (
+        <CaseModal liveCase={selectedCase} onClose={() => setSelectedCase(null)} />
+      )}
     </div>
   );
 };
