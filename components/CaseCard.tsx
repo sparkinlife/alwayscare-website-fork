@@ -106,10 +106,7 @@ const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid
         onClick={() => onSelect(liveCase)}
         className="bg-white border border-slate-100 p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
       >
-        <div className={`flex gap-3 ${showImage ? '' : ''}`}>
-          <div className="flex-1 min-w-0">
-            <CardContent liveCase={liveCase} compact />
-          </div>
+        <div className="flex gap-3">
           {showImage && (
             <img
               src={thumbnailUrl!}
@@ -119,6 +116,9 @@ const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid
               className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shrink-0 bg-slate-100 self-center"
             />
           )}
+          <div className="flex-1 min-w-0">
+            <CardContent liveCase={liveCase} compact />
+          </div>
         </div>
       </div>
     );
