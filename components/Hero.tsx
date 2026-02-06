@@ -234,8 +234,12 @@ const Hero: React.FC = () => {
 
 
   return (
-    <div id="home" className="relative bg-slate-50 flex flex-col pt-16 lg:h-screen lg:overflow-hidden">
-      
+    <div id="home" className="relative bg-gradient-to-br from-white via-red-50/30 to-amber-50/20 flex flex-col pt-16 lg:h-screen lg:overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-20 -left-20 w-72 h-72 bg-red-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 right-10 w-56 h-56 bg-amber-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-rose-100/15 rounded-full blur-3xl pointer-events-none" />
+
       <div className="flex flex-col lg:flex-row w-full flex-1 lg:h-full">
         
         {/* LEFT COLUMN: Mission Control (Title, Stats, Live Feed) */}
@@ -244,23 +248,23 @@ const Hero: React.FC = () => {
           
           {/* 1. Header & Title */}
           <div className="mb-4 md:mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="animate-fadeUp animate-slowPulse inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-3">
               <AlertCircle size={14} />
               <span>EMERGENCY RESPONSE</span>
             </div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              India's Fast & Free <br /><span className="text-red-600">Animal Ambulance Network</span>
+            <h1 className="animate-fadeUp text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", animationDelay: '100ms' }}>
+              India's Fast & Free <br /><span className="bg-gradient-to-r from-red-600 via-rose-500 to-red-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Animal Ambulance Network</span>
             </h1>
-            <p className="text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <p className="animate-fadeUp text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", animationDelay: '200ms' }}>
               On call, free first-aid and treatment for every injured street animal.
             </p>
           </div>
 
           {/* 2. Impact Stats Row */}
-          <div className="grid grid-cols-4 gap-2 mb-4 md:mb-6">
+          <div className="animate-fadeUp grid grid-cols-4 gap-2 mb-4 md:mb-6" style={{ animationDelay: '300ms' }}>
 
             {/* Card 1 */}
-            <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
+            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider bg-slate-200/50 inline-block px-1.5 py-0.5 rounded mb-1 self-start">{currentDate}</div>
               <div className="text-xl md:text-2xl font-black text-slate-900">
                 {dailyCases === '...' ? (
@@ -273,21 +277,21 @@ const Hero: React.FC = () => {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
+            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Lives Saved</div>
               <div className="text-xl md:text-2xl font-black text-red-600">1.5 Lakh+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">In Last 3 Years</div>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
+            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Across India</div>
               <div className="text-xl md:text-2xl font-black text-slate-900">43+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Ambulance & Clinics</div>
             </div>
 
             {/* Card 4 */}
-            <div className="bg-slate-50 p-2.5 md:p-3 rounded-xl border border-slate-200 hover:border-red-200 transition-colors flex flex-col">
+            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">On Ground</div>
               <div className="text-xl md:text-2xl font-black text-slate-900">75+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Vets & Paravets</div>
@@ -296,7 +300,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* 3. Live Cases Feed (Light Theme) */}
-          <div className="flex-1 bg-amber-50/50 border border-amber-100 rounded-2xl p-4 md:p-5 mb-4 flex flex-col min-h-[180px] shadow-sm">
+          <div className="animate-fadeUp flex-1 bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-4 md:p-5 mb-4 flex flex-col min-h-[180px] shadow-sm" style={{ animationDelay: '400ms' }}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -330,12 +334,12 @@ const Hero: React.FC = () => {
 
           {/* 4. Action Buttons (Donate + Volunteer) */}
           {/* Stack on mobile, row on larger screens */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-             <a href="#donate" className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 transition-all text-sm md:text-base">
+          <div className="animate-fadeUp flex flex-col sm:flex-row gap-3 mt-auto" style={{ animationDelay: '500ms' }}>
+             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
                 <Heart size={18} className="fill-current" />
                 Donate Now
              </a>
-             <a href="#volunteer" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 transition-all text-sm md:text-base">
+             <a href="#volunteer" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
                 <UserPlus size={18} />
                 Join as Volunteer
              </a>
