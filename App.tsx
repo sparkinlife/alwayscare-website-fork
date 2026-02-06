@@ -3,8 +3,6 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import Volunteer from './components/Volunteer';
 import Footer from './components/Footer';
-// Chat assistant disabled - requires API key
-// import GeminiAssistant from './components/GeminiAssistant';
 
 const App: React.FC = () => {
   return (
@@ -15,8 +13,6 @@ const App: React.FC = () => {
         <Volunteer />
       </main>
       <Footer />
-      {/* Chat assistant disabled - uncomment when API key is configured */}
-      {/* <GeminiAssistant /> */}
     </div>
   );
 };
