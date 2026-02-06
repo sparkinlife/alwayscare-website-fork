@@ -47,7 +47,14 @@ const LiveImpactPage: React.FC = () => {
         (c.doctorObservation && c.doctorObservation.toLowerCase().includes(q)) ||
         (c.informerName && c.informerName.toLowerCase().includes(q)) ||
         c.animalType.toLowerCase().includes(q) ||
-        c.siteName.toLowerCase().includes(q)
+        c.siteName.toLowerCase().includes(q) ||
+        c.status.replace(/_/g, ' ').toLowerCase().includes(q) ||
+        c.condition.toLowerCase().includes(q) ||
+        (c.affectedBodyPart && c.affectedBodyPart.toLowerCase().includes(q)) ||
+        (c.treatmentGiven && c.treatmentGiven.toLowerCase().includes(q)) ||
+        (c.medicationDosage && c.medicationDosage.toLowerCase().includes(q)) ||
+        (c.recommendation && c.recommendation.replace(/_/g, ' ').toLowerCase().includes(q)) ||
+        (c.caseType && c.caseType.replace(/_/g, ' ').toLowerCase().includes(q))
       );
     }
 
@@ -155,7 +162,7 @@ const LiveImpactPage: React.FC = () => {
                   className="animate-fadeUp"
                   style={{ animationDelay: `${(index % ITEMS_PER_PAGE) * 50}ms` }}
                 >
-                  <CaseCard liveCase={c} onSelect={setSelectedCase} />
+                  <CaseCard liveCase={c} onSelect={setSelectedCase} variant="grid" />
                 </div>
               ))}
             </div>

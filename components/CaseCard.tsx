@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MapPin, Camera, ChevronRight } from 'lucide-react';
 import { LiveCase } from '../types';
-import { formatTimeAgo, formatStatus } from '../utils';
+import { formatTimeAgo, formatStatus, getGoogleDriveThumbnailUrl } from '../utils';
 
 interface CaseCardProps {
   liveCase: LiveCase;
   onSelect: (liveCase: LiveCase) => void;
+  variant?: 'grid' | 'feed';
 }
 
 const conditionClasses = (condition: string): string => {
@@ -31,69 +32,117 @@ const statusDotClass = (status: string): string => {
   return 'bg-blue-500';
 };
 
-const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect }) => {
+const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ liveCase, compact }) => (
+  <>
+    {/* Header */}
+    <div className="flex justify-between items-start">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-sm font-bold text-slate-900 shrink-0">Case #{liveCase.caseId}</span>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0 ${conditionClasses(liveCase.condition)}`}>
+          {liveCase.condition}
+        </span>
+      </div>
+      <span className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2 shrink-0">
+        {formatTimeAgo(liveCase.caseDate)}
+      </span>
+    </div>
+
+    {/* Animal + Ambulance */}
+    <div className="text-xs text-slate-500 mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
+
+    {/* Address (conditional) */}
+    {liveCase.address && (
+      <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+        <MapPin size={12} className="text-slate-400 shrink-0" />
+        <span className="truncate">{liveCase.address}</span>
+      </div>
+    )}
+
+    {/* Doctor observation (conditional) — hidden in compact/feed mode */}
+    {!compact && liveCase.doctorObservation && (
+      <div className="mt-2">
+        <p className="text-xs text-slate-600 line-clamp-2">{liveCase.doctorObservation}</p>
+        {liveCase.affectedBodyPart && (
+          <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+            {liveCase.affectedBodyPart}
+          </span>
+        )}
+      </div>
+    )}
+
+    {/* Bottom bar */}
+    <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
+      {liveCase.caseType === 'FOLLOW_UP_CASE' && (
+        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-600 border border-purple-100 font-medium whitespace-nowrap shrink-0">
+          Follow-up
+        </span>
+      )}
+      {!compact && (liveCase.preTreatmentPhoto ? (
+        <span className="flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap shrink-0">
+          <Camera size={10} /> Photo
+        </span>
+      ) : (
+        <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
+          <Camera size={10} /> No Photos
+        </span>
+      ))}
+      <span className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-medium whitespace-nowrap shrink-0 ${statusClasses(liveCase.status)}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${statusDotClass(liveCase.status)}`}></span>
+        {formatStatus(liveCase.status)}
+      </span>
+      <ChevronRight size={14} className="text-slate-300 group-hover:text-red-400 transition-colors ml-auto shrink-0" />
+    </div>
+  </>
+);
+
+const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid' }) => {
+  const [imgError, setImgError] = useState(false);
+  const thumbnailUrl = getGoogleDriveThumbnailUrl(liveCase.preTreatmentPhoto);
+  const showImage = !!thumbnailUrl && !imgError;
+
+  if (variant === 'feed') {
+    return (
+      <div
+        onClick={() => onSelect(liveCase)}
+        className="bg-white border border-slate-100 p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
+      >
+        <div className={`flex gap-3 ${showImage ? '' : ''}`}>
+          <div className="flex-1 min-w-0">
+            <CardContent liveCase={liveCase} compact />
+          </div>
+          {showImage && (
+            <img
+              src={thumbnailUrl!}
+              alt={`Case #${liveCase.caseId}`}
+              loading="lazy"
+              onError={() => setImgError(true)}
+              className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shrink-0 bg-slate-100 self-center"
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // variant === 'grid'
   return (
     <div
       onClick={() => onSelect(liveCase)}
-      className="bg-white border border-slate-100 p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
+      className="bg-white border border-slate-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group overflow-hidden"
     >
-      {/* Row 1: Header */}
-      <div className="flex justify-between items-start">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-bold text-slate-900 shrink-0">Case #{liveCase.caseId}</span>
-          <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0 ${conditionClasses(liveCase.condition)}`}>
-            {liveCase.condition}
-          </span>
-        </div>
-        <span className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2 shrink-0">
-          {formatTimeAgo(liveCase.caseDate)}
-        </span>
-      </div>
-
-      {/* Row 2: Animal + Ambulance */}
-      <div className="text-xs text-slate-500 mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
-
-      {/* Row 3: Address (conditional) */}
-      {liveCase.address && (
-        <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-          <MapPin size={12} className="text-slate-400 shrink-0" />
-          <span className="truncate">{liveCase.address}</span>
+      {showImage && (
+        <div className="bg-slate-100">
+          <img
+            src={thumbnailUrl!}
+            alt={`Case #${liveCase.caseId}`}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            className="w-full aspect-[3/2] object-cover"
+          />
         </div>
       )}
-
-      {/* Row 4: Doctor observation (conditional) */}
-      {liveCase.doctorObservation && (
-        <div className="mt-2">
-          <p className="text-xs text-slate-600 line-clamp-2">{liveCase.doctorObservation}</p>
-          {liveCase.affectedBodyPart && (
-            <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
-              {liveCase.affectedBodyPart}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Row 5: Bottom bar */}
-      <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
-        {liveCase.caseType === 'FOLLOW_UP_CASE' && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-600 border border-purple-100 font-medium whitespace-nowrap shrink-0">
-            Follow-up
-          </span>
-        )}
-        {liveCase.preTreatmentPhoto ? (
-          <span className="flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap shrink-0">
-            <Camera size={10} /> Photo
-          </span>
-        ) : (
-          <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
-            <Camera size={10} /> No Photos
-          </span>
-        )}
-        <span className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-medium whitespace-nowrap shrink-0 ${statusClasses(liveCase.status)}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${statusDotClass(liveCase.status)}`}></span>
-          {formatStatus(liveCase.status)}
-        </span>
-        <ChevronRight size={14} className="text-slate-300 group-hover:text-red-400 transition-colors ml-auto shrink-0" />
+      <div className="p-3">
+        <CardContent liveCase={liveCase} />
       </div>
     </div>
   );

@@ -15,3 +15,18 @@ export const formatTimeAgo = (dateString: string): string => {
 export const formatStatus = (status: string): string => {
   return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 };
+
+export function getGoogleDriveThumbnailUrl(url: string | null, width: number = 400): string | null {
+  if (!url) return null;
+  // Format: /file/d/FILE_ID/...
+  let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!match) {
+    // Format: ?id=FILE_ID or &id=FILE_ID
+    match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  }
+  if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w${width}`;
+  // Direct image URL — return as-is
+  if (url.match(/\.(jpg|jpeg|png|gif|webp)/i)) return url;
+  // Fallback: return original URL
+  return url;
+}

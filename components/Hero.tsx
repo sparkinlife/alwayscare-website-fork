@@ -318,7 +318,7 @@ const Hero: React.FC = () => {
                 <div className="text-center py-8 text-slate-500">No cases found</div>
               ) : (
                 liveCases.map((item) => (
-                  <CaseCard key={item.id} liveCase={item} onSelect={setSelectedCase} />
+                  <CaseCard key={item.id} liveCase={item} onSelect={setSelectedCase} variant="feed" />
                 ))
               )}
             </div>
