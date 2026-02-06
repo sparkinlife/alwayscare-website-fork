@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, MapPin, Camera, Video, User, Clock } from 'lucide-react';
+import { X, MapPin, Camera, Video, User } from 'lucide-react';
 import { LiveCase } from '../types';
 import { formatTimeAgo, formatStatus } from '../utils';
 
@@ -49,15 +49,6 @@ const formatDateTime = (dateString: string): string => {
     day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
-};
-
-const calculateResponseTime = (caseDate: string, createdAt: string): string => {
-  const diff = Math.abs(new Date(createdAt).getTime() - new Date(caseDate).getTime());
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins} minute${mins !== 1 ? 's' : ''}`;
-  const hours = Math.floor(mins / 60);
-  const remainMins = mins % 60;
-  return `${hours} hr ${remainMins} min`;
 };
 
 const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
@@ -228,26 +219,6 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
               </div>
             </div>
           )}
-
-          {/* Response Time */}
-          <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-slate-700">Timeline</h3>
-            <div className="flex items-start gap-2 text-sm text-slate-600">
-              <Clock size={14} className="text-slate-400 mt-0.5 shrink-0" />
-              <span>Case reported: {formatDateTime(liveCase.caseDate)}</span>
-            </div>
-            {liveCase.createdAt && (
-              <>
-                <div className="flex items-start gap-2 text-sm text-slate-600">
-                  <Clock size={14} className="text-slate-400 mt-0.5 shrink-0" />
-                  <span>Logged at: {formatDateTime(liveCase.createdAt)}</span>
-                </div>
-                <div className="text-xs text-slate-500 bg-white rounded-lg px-3 py-2 border border-slate-200 font-medium">
-                  Response time: {calculateResponseTime(liveCase.caseDate, liveCase.createdAt)}
-                </div>
-              </>
-            )}
-          </div>
 
         </div>
       </div>
