@@ -301,6 +301,7 @@ const Hero: React.FC = () => {
               <h3 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 Live Cases
+                <span className="text-xs text-slate-400 font-normal">&middot; {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
               </h3>
               <span className="text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
@@ -323,7 +324,7 @@ const Hero: React.FC = () => {
               )}
             </div>
             <Link to="/live-impact" className="w-full mt-3 text-xs text-center text-slate-500 hover:text-red-600 font-medium flex items-center justify-center gap-1 transition-colors py-2">
-              View All {totalCount > 0 ? `${totalCount}+` : ''} Daily Cases <ArrowRight size={12} />
+              View all cases <ArrowRight size={12} />
             </Link>
           </div>
 
