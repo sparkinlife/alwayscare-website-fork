@@ -34,6 +34,11 @@ const Hero: React.FC = () => {
   const { cases: liveCases, totalCount, loading: liveCasesLoading } = useLiveCases(6);
   const [selectedCase, setSelectedCase] = useState<LiveCase | null>(null);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [donationSelection, setDonationSelection] = useState<
+    { type: 'monthly'; amount: 50 | 100 } |
+    { type: 'onetime'; amount: 100 | 500 | 1000 } |
+    { type: 'custom'; amount: string }
+  >({ type: 'monthly', amount: 100 });
 
   // Set today's date
   useEffect(() => {
@@ -161,7 +166,7 @@ const Hero: React.FC = () => {
           attributionControl: false,
           scrollWheelZoom: false,
           dragging: !L.Browser.mobile
-        }).setView([21, 71], 5);
+        }).setView([26, 71], 5);
 
         if (L.Browser.mobile) {
           map.dragging.enable();
@@ -397,11 +402,11 @@ const Hero: React.FC = () => {
           {/* 4. Action Buttons (Donate + Volunteer) */}
           {/* Stack on mobile, row on larger screens */}
           <div className="animate-fadeUp flex flex-col sm:flex-row gap-3 mt-auto" style={{ animationDelay: '500ms' }}>
-             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
+             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
                 <Heart size={18} className="fill-current" />
                 Donate Now
              </a>
-             <a href="#volunteer" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
+             <a href="#volunteer" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
                 <UserPlus size={18} />
                 Join as Volunteer
              </a>
@@ -512,6 +517,92 @@ const Hero: React.FC = () => {
                   ))
                 )}
               </div>
+           </div>
+
+           {/* Desktop Donation Widget (top-right of map) */}
+           <div className="absolute top-4 right-16 w-[320px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl z-40 border border-slate-200 hidden lg:flex flex-col p-4">
+             {/* Header */}
+             <div className="flex items-start gap-2 mb-3">
+               <span className="text-xl leading-none mt-0.5">❤️</span>
+               <div>
+                 <h4 className="font-bold text-sm text-slate-900">Save Street Animals</h4>
+                 <p className="text-[11px] text-slate-500 whitespace-nowrap">₹100 helps one injured animal · <span className="text-red-600 font-semibold">1.5L+ saved</span></p>
+               </div>
+             </div>
+
+             {/* Support Monthly */}
+             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Support Monthly (Recommended)</p>
+             <div className="grid grid-cols-2 gap-2 mb-3">
+               <button
+                 onClick={() => setDonationSelection({ type: 'monthly', amount: 50 })}
+                 className={`p-2 rounded-lg border text-center transition-all ${
+                   donationSelection.type === 'monthly' && donationSelection.amount === 50
+                     ? 'border-red-300 bg-red-50/50'
+                     : 'border-slate-200 hover:border-slate-300'
+                 }`}
+               >
+                 <div className="text-sm font-bold text-slate-900">₹50 / day</div>
+                 <div className="text-[10px] text-slate-400">₹1500 / month</div>
+               </button>
+               <button
+                 onClick={() => setDonationSelection({ type: 'monthly', amount: 100 })}
+                 className={`p-2 rounded-lg border text-center transition-all ${
+                   donationSelection.type === 'monthly' && donationSelection.amount === 100
+                     ? 'border-red-400 bg-red-50/60'
+                     : 'border-slate-200 hover:border-slate-300'
+                 }`}
+               >
+                 <div className="text-sm font-bold text-red-600">₹100 / day</div>
+                 <div className="text-[10px] text-slate-400">₹3000 / month</div>
+               </button>
+             </div>
+
+             {/* One-time donation */}
+             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">One-time donation</p>
+             <div className="grid grid-cols-4 gap-1.5 mb-4">
+               {([100, 500, 1000] as const).map((val) => (
+                 <button
+                   key={val}
+                   onClick={() => setDonationSelection({ type: 'onetime', amount: val })}
+                   className={`py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                     donationSelection.type === 'onetime' && donationSelection.amount === val
+                       ? 'border-red-300 bg-red-50 text-red-600'
+                       : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                   }`}
+                 >
+                   {`₹${val}`}
+                 </button>
+               ))}
+               {donationSelection.type === 'custom' ? (
+                 <div className="relative">
+                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">₹</span>
+                   <input
+                     type="number"
+                     autoFocus
+                     placeholder="Amt"
+                     value={donationSelection.amount}
+                     onChange={(e) => setDonationSelection({ type: 'custom', amount: e.target.value })}
+                     className="w-full py-1.5 pl-5 pr-1 rounded-lg border border-red-300 bg-red-50 text-xs font-semibold text-red-600 focus:outline-none focus:ring-1 focus:ring-red-400"
+                   />
+                 </div>
+               ) : (
+                 <button
+                   onClick={() => setDonationSelection({ type: 'custom', amount: '' })}
+                   className="py-1.5 rounded-lg border text-xs font-semibold transition-all border-slate-200 text-slate-700 hover:border-slate-300"
+                 >
+                   Custom
+                 </button>
+               )}
+             </div>
+
+             {/* Donate button */}
+             <a
+               href="#donate"
+               className="btn-shine w-4/5 mx-auto bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-full font-bold text-sm text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/20 hover:shadow-xl transition-all duration-200"
+             >
+               <span>❤️</span>
+               Donate
+             </a>
            </div>
 
            {/* Mobile List Section (Visible only on Mobile) */}

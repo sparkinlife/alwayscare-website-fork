@@ -32,7 +32,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 py-3 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 py-2">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo Area */}
         <Link to="/" className="flex items-center">
@@ -44,7 +44,7 @@ const Header: React.FC = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav role="navigation" aria-label="Main navigation" className="hidden md:flex items-center gap-6">
+        <nav role="navigation" aria-label="Main navigation" className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(link =>
             renderNavLink(
               link,
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
           )}
           <Link
             to="/#home"
-            className="px-5 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-red-600/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="px-6 py-2.5 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm shadow-md shadow-red-600/15 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             <Phone size={16} className="fill-current" />
             Call Ambulance
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
           <Link
             to="/#home"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-center px-4 py-3.5 bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-colors mt-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="w-full text-center px-4 py-3.5 bg-red-600 text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-colors mt-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             <Phone size={18} className="fill-current" />
             Call Ambulance
