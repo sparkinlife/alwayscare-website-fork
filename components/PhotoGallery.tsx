@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 interface MediaItem {
@@ -45,57 +45,154 @@ const MediaElement: React.FC<{ item: MediaItem; alt: string }> = ({ item, alt })
   );
 };
 
-const MarqueeRow: React.FC<{ items: MediaItem[]; direction: 'left' | 'right' }> = ({ items, direction }) => (
-  <div className="overflow-hidden group">
-    <div
-      className={`flex w-max ${
-        direction === 'left' ? 'animate-marquee-left' : 'animate-marquee-right'
-      } group-hover:[animation-play-state:paused]`}
-    >
-      {/* Set 1 */}
-      <div className="flex gap-4 shrink-0 pr-4">
-        {items.map((item, i) => (
-          <div
-            key={`a-${i}`}
-            className="shrink-0 w-[260px] md:w-[320px] lg:w-[360px] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
-          >
-            <MediaElement item={item} alt="Always Care field work" />
-          </div>
-        ))}
-      </div>
-      {/* Set 2 (duplicate for seamless loop) */}
-      <div className="flex gap-4 shrink-0 pr-4" aria-hidden="true">
-        {items.map((item, i) => (
-          <div
-            key={`b-${i}`}
-            className="shrink-0 w-[260px] md:w-[320px] lg:w-[360px] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
-          >
-            <MediaElement item={item} alt="" />
+const GalleryRow = React.forwardRef<HTMLDivElement, { items: MediaItem[] }>(
+  ({ items }, ref) => (
+    <div className="overflow-hidden">
+      <div
+        ref={ref}
+        className="flex w-max"
+        style={{ willChange: 'transform' }}
+      >
+        {[0, 1, 2].map((setIdx) => (
+          <div key={setIdx} className="flex gap-4 shrink-0 pr-4" aria-hidden={setIdx > 0}>
+            {items.map((item, i) => (
+              <div
+                key={`${setIdx}-${i}`}
+                className="shrink-0 w-[260px] md:w-[320px] lg:w-[360px] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
+              >
+                <MediaElement item={item} alt={setIdx === 0 ? 'Always Care field work' : ''} />
+              </div>
+            ))}
           </div>
         ))}
       </div>
     </div>
-  </div>
+  ),
 );
+GalleryRow.displayName = 'GalleryRow';
+
+const SEVA_LETTERS = ['S', 'E', 'V', 'A'];
 
 const PhotoGallery: React.FC = () => {
-  const { ref, isVisible } = useScrollReveal({ threshold: 0.05 });
+  const { ref: revealRef, isVisible } = useScrollReveal({ threshold: 0.05 });
+  const sectionRef = useRef<HTMLElement>(null);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const sevaRef = useRef<HTMLHeadingElement>(null);
+  const rafRef = useRef<number>(0);
+  const autoOffsetRef = useRef(0);
+  const prevTimeRef = useRef(0);
+  const setWidthRef = useRef(1880);
+  const row1InitRef = useRef(0);
+  const row2InitRef = useRef(0);
+
+  const AUTO_SPEED = 30; // pixels per second — slow baseline crawl
+
+  // Calculate layout: set width + direction-aware initial offsets to center videos
+  useEffect(() => {
+    const calcLayout = () => {
+      const w = window.innerWidth;
+      const itemW = w >= 1024 ? 360 : w >= 768 ? 320 : 260;
+      const gap = 16;
+      const sw = 5 * itemW + 4 * gap + gap; // items + inter-gaps + right padding
+
+      // Video is the 3rd item (index 2). Its center within one set:
+      const videoCenterInSet = 2 * (itemW + gap) + itemW / 2;
+      const viewportCenter = w / 2;
+
+      setWidthRef.current = sw;
+      row1InitRef.current = videoCenterInSet - viewportCenter;
+      row2InitRef.current = sw + (videoCenterInSet - viewportCenter);
+    };
+
+    calcLayout();
+
+    window.addEventListener('resize', calcLayout);
+    return () => window.removeEventListener('resize', calcLayout);
+  }, []);
+
+  // Combined auto-scroll + scroll-driven parallax loop
+  useEffect(() => {
+    const animate = (timestamp: number) => {
+      if (!prevTimeRef.current) prevTimeRef.current = timestamp;
+      const delta = Math.min((timestamp - prevTimeRef.current) / 1000, 0.1);
+      prevTimeRef.current = timestamp;
+
+      // Continuous auto-scroll increment
+      autoOffsetRef.current += AUTO_SPEED * delta;
+      const sw = setWidthRef.current;
+      // Wrap at one set width → seamless infinite loop (content is tripled)
+      if (sw > 0 && autoOffsetRef.current >= sw) {
+        autoOffsetRef.current -= sw;
+      }
+
+      // Scroll-driven parallax offset
+      let scrollDriven = 0;
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const sectionMiddle = rect.top + rect.height / 2;
+        const viewportMiddle = window.innerHeight / 2;
+        scrollDriven = (viewportMiddle - sectionMiddle) * 0.35;
+      }
+
+      const autoVal = autoOffsetRef.current;
+
+      // Direct DOM updates — bypasses React re-renders for 60fps
+      // Row 1 moves LEFT: -(init + auto + scroll)
+      if (row1Ref.current) {
+        row1Ref.current.style.transform = `translateX(${-(row1InitRef.current + autoVal + scrollDriven)}px)`;
+      }
+      // Row 2 moves RIGHT: -(init - auto - scroll)
+      if (row2Ref.current) {
+        row2Ref.current.style.transform = `translateX(${-(row2InitRef.current - autoVal - scrollDriven)}px)`;
+      }
+      // SEVA: scroll-driven letter spacing
+      if (sevaRef.current) {
+        const gapOffset = Math.max(-8, Math.min(16, scrollDriven * 0.04));
+        const baseGap = window.innerWidth >= 1024 ? 24 : window.innerWidth >= 768 ? 16 : 8;
+        sevaRef.current.style.gap = `${baseGap + gapOffset}px`;
+      }
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
 
   return (
-    <section className="py-16 md:py-24 bg-[#FAFAFA] overflow-hidden" ref={ref}>
-      <MarqueeRow items={row1Items} direction="left" />
+    <section
+      className="py-16 md:py-24 bg-[#FAFAFA] overflow-hidden"
+      ref={(el) => {
+        sectionRef.current = el;
+        if (typeof revealRef === 'function') {
+          revealRef(el);
+        } else if (revealRef) {
+          (revealRef as React.MutableRefObject<HTMLElement | null>).current = el;
+        }
+      }}
+    >
+      <GalleryRow ref={row1Ref} items={row1Items} />
 
       {/* S E V A divider */}
-      <div
-        className={`scroll-reveal ${isVisible ? 'visible' : ''} py-8 md:py-12 text-center`}
-        style={{ animationDelay: '200ms' }}
-      >
-        <h2 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-[0.3em] md:tracking-[0.5em] text-slate-200/80 select-none leading-none">
-          SEVA
+      <div className="py-8 md:py-12 text-center">
+        <h2
+          ref={sevaRef}
+          className="flex items-center justify-center select-none leading-none"
+        >
+          {SEVA_LETTERS.map((letter, i) => (
+            <span
+              key={letter}
+              className={`scroll-reveal ${isVisible ? 'visible' : ''} inline-block text-6xl md:text-8xl lg:text-[10rem] font-black bg-gradient-to-r from-slate-300 via-slate-100 to-slate-300 bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer cursor-default hover:from-red-400 hover:via-rose-300 hover:to-red-400 hover:scale-110 transition-transform duration-300 seva-letter`}
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              {letter}
+            </span>
+          ))}
         </h2>
       </div>
 
-      <MarqueeRow items={row2Items} direction="right" />
+      <GalleryRow ref={row2Ref} items={row2Items} />
     </section>
   );
 };

@@ -146,3 +146,12 @@
 .user-location-pulse {
   animation: pulseRing 1.5s ease-out infinite;
 }
+
+/* SEVA letter hover glow */
+.seva-letter {
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.seva-letter:hover {
+  filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.4));
+}
