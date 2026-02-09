@@ -7,6 +7,25 @@ import { useLiveCases } from '../hooks/useLiveCases';
 import CaseCard from './CaseCard';
 import CaseModal from './CaseModal';
 
+// Animated count-up hook for stat numbers
+function useCountUp(end: number, duration = 1500, delay = 0) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const startTime = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        setValue(Math.floor(eased * end));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [end, duration, delay]);
+  return value;
+}
+
 // Calculate distance between two points using Haversine formula
 const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
   const R = 6371; // Earth's radius in km
@@ -39,6 +58,10 @@ const Hero: React.FC = () => {
     { type: 'onetime'; amount: 100 | 500 | 1000 } |
     { type: 'custom'; amount: string }
   >({ type: 'monthly', amount: 100 });
+
+  // Animated count-up values for stats
+  const countAmbulances = useCountUp(43, 1500, 400);
+  const countVets = useCountUp(75, 1500, 600);
 
   // Set today's date
   useEffect(() => {
@@ -311,11 +334,11 @@ const Hero: React.FC = () => {
         
         {/* LEFT COLUMN: Mission Control (Title, Stats, Live Feed) */}
         {/* Mobile: Natural scroll. Desktop: Internal scroll */}
-        <div className="w-full lg:w-[45%] flex flex-col p-5 md:p-6 lg:p-8 bg-white z-20 shadow-xl lg:overflow-y-auto order-1">
+        <div className="w-full lg:w-[45%] flex flex-col p-5 md:p-6 lg:p-8 bg-gradient-to-b from-white via-white to-slate-50/80 z-20 shadow-xl lg:shadow-[8px_0_30px_-5px_rgba(0,0,0,0.08)] lg:overflow-y-auto order-1">
           
           {/* 1. Header & Title */}
           <div className="mb-4 md:mb-6">
-            <div className="animate-fadeUp inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="animate-fadeUp animate-badgeGlow inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold uppercase tracking-wider mb-3">
               <Sparkles size={14} />
               <span>Vision of Param Namramuni Gurudev</span>
             </div>
@@ -325,15 +348,16 @@ const Hero: React.FC = () => {
             <p className="animate-fadeUp text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", animationDelay: '200ms' }}>
               On call, free first-aid and treatment for every injured street animal.
             </p>
+            <div className="animate-fadeUp h-0.5 w-16 bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 rounded-full mt-4" style={{ animationDelay: '250ms' }} />
           </div>
 
           {/* 2. Impact Stats Row */}
           <div className="animate-fadeUp grid grid-cols-4 gap-2 mb-4 md:mb-6" style={{ animationDelay: '300ms' }}>
 
             {/* Card 1 */}
-            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
+            <div className="group bg-white/60 backdrop-blur-sm p-2.5 md:p-3 rounded-xl border border-slate-200/80 border-l-4 border-l-red-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider bg-slate-200/50 inline-block px-1.5 py-0.5 rounded mb-1 self-start">{currentDate}</div>
-              <div className="text-xl md:text-2xl font-black text-slate-900">
+              <div className="text-xl md:text-2xl font-black text-slate-900 group-hover:scale-105 transition-transform origin-left">
                 {dailyCases === '...' ? (
                   <span className="inline-block w-12 h-6 bg-slate-200 rounded animate-pulse"></span>
                 ) : (
@@ -344,23 +368,23 @@ const Hero: React.FC = () => {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
+            <div className="group bg-white/60 backdrop-blur-sm p-2.5 md:p-3 rounded-xl border border-slate-200/80 border-l-4 border-l-rose-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Lives Saved</div>
-              <div className="text-xl md:text-2xl font-black text-red-600">1.5 Lakh+</div>
+              <div className="text-xl md:text-2xl font-black text-red-600 group-hover:scale-105 transition-transform origin-left">1.5 Lakh+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">In Last 3 Years</div>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
+            <div className="group bg-white/60 backdrop-blur-sm p-2.5 md:p-3 rounded-xl border border-slate-200/80 border-l-4 border-l-amber-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Across India</div>
-              <div className="text-xl md:text-2xl font-black text-slate-900">43+</div>
+              <div className="text-xl md:text-2xl font-black text-slate-900 group-hover:scale-105 transition-transform origin-left">{countAmbulances}+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Ambulance & Clinics</div>
             </div>
 
             {/* Card 4 */}
-            <div className="bg-white/80 p-2.5 md:p-3 rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col">
+            <div className="group bg-white/60 backdrop-blur-sm p-2.5 md:p-3 rounded-xl border border-slate-200/80 border-l-4 border-l-emerald-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
               <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">On Ground</div>
-              <div className="text-xl md:text-2xl font-black text-slate-900">75+</div>
+              <div className="text-xl md:text-2xl font-black text-slate-900 group-hover:scale-105 transition-transform origin-left">{countVets}+</div>
               <div className="text-[10px] md:text-xs text-slate-600 font-medium leading-tight mt-auto">Vets & Paravets</div>
             </div>
 
@@ -370,11 +394,11 @@ const Hero: React.FC = () => {
           <div className="animate-fadeUp flex-1 bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-4 md:p-5 mb-4 flex flex-col min-h-[180px] shadow-sm" style={{ animationDelay: '400ms' }}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse ring-4 ring-red-500/10"></span>
                 Live Cases
                 <span className="text-xs text-slate-400 font-normal">&middot; {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
               </h3>
-              <span className="text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
+              <span className="btn-shine text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
             
             <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px] lg:max-h-none">
@@ -402,11 +426,11 @@ const Hero: React.FC = () => {
           {/* 4. Action Buttons (Donate + Volunteer) */}
           {/* Stack on mobile, row on larger screens */}
           <div className="animate-fadeUp flex flex-col sm:flex-row gap-3 mt-auto" style={{ animationDelay: '500ms' }}>
-             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
+             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm md:text-base">
                 <Heart size={18} className="fill-current" />
                 Donate Now
              </a>
-             <a href="#volunteer" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 text-sm md:text-base">
+             <a href="#volunteer" className="btn-shine flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm md:text-base">
                 <UserPlus size={18} />
                 Join as Volunteer
              </a>
@@ -449,7 +473,7 @@ const Hero: React.FC = () => {
            </div>
 
            {/* Desktop Floating List (Hidden on Mobile) */}
-           <div className="absolute top-4 left-4 bottom-4 w-[340px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl z-40 flex flex-col border border-slate-200 hidden lg:flex">
+           <div className="absolute top-4 left-4 bottom-4 w-[340px] bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.08)] z-40 flex flex-col border border-white/50 hidden lg:flex">
               
               {/* List Header */}
               <div className="p-4 border-b border-slate-100">
@@ -520,7 +544,7 @@ const Hero: React.FC = () => {
            </div>
 
            {/* Desktop Donation Widget (top-right of map) */}
-           <div className="absolute top-4 right-16 w-[320px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl z-40 border border-slate-200 hidden lg:flex flex-col p-4">
+           <div className="absolute top-4 right-16 w-[320px] bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.08)] z-40 border border-white/50 hidden lg:flex flex-col p-4">
              {/* Header */}
              <div className="flex items-start gap-2 mb-3">
                <span className="text-xl leading-none mt-0.5">❤️</span>
