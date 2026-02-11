@@ -182,7 +182,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
               bottom: "-30px",
               right: isReversed ? "auto" : "-10px",
               left: isReversed ? "-10px" : "auto",
-              fontFamily: "'Georgia', 'Times New Roman', serif",
+              fontFamily: "'Open Runde', sans-serif",
               fontSize: "280px",
               fontWeight: "700",
               color: pillar.accentColor,
@@ -223,7 +223,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
             </div>
             <span
               style={{
-                fontFamily: "'SF Mono', 'Fira Code', 'JetBrains Mono', monospace",
+                fontFamily: "'Open Runde', sans-serif",
                 fontSize: "11px",
                 fontWeight: "600",
                 letterSpacing: "2.5px",
@@ -266,7 +266,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
             <div
               style={{
-                fontFamily: "'SF Mono', 'Fira Code', monospace",
+                fontFamily: "'Open Runde', sans-serif",
                 fontSize: "13px",
                 fontWeight: "500",
                 color: pillar.accentColor,
@@ -278,7 +278,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
             <div style={{ height: "1px", width: "40px", background: pillar.accentColor, opacity: 0.25 }} />
             <div
               style={{
-                fontFamily: "'SF Mono', 'Fira Code', monospace",
+                fontFamily: "'Open Runde', sans-serif",
                 fontSize: "11px",
                 letterSpacing: "1.5px",
                 color: "#94A3B8",
@@ -305,7 +305,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
 
           <p
             style={{
-              fontFamily: "'Georgia', serif",
+              fontFamily: "'Open Runde', sans-serif",
               fontSize: "18px",
               fontStyle: "italic",
               color: pillar.accentColor,
@@ -322,7 +322,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
               lineHeight: "1.75",
               color: "#475569",
               margin: "0 0 40px 0",
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              fontFamily: "'Open Runde', sans-serif",
             }}
           >
             {pillar.description}
@@ -332,7 +332,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
             <div>
               <div
                 style={{
-                  fontFamily: "'Georgia', serif",
+                  fontFamily: "'Open Runde', sans-serif",
                   fontSize: "48px",
                   fontWeight: "700",
                   color: pillar.accentColor,
@@ -357,7 +357,7 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[number]; index
             <div>
               <div
                 style={{
-                  fontFamily: "'Georgia', serif",
+                  fontFamily: "'Open Runde', sans-serif",
                   fontSize: "48px",
                   fontWeight: "700",
                   color: "#0F172A",
@@ -436,7 +436,7 @@ export default function FoundationOfCare() {
             <div style={{ height: "1px", width: "40px", background: "#CBD5E1" }} />
             <span
               style={{
-                fontFamily: "'SF Mono', 'Fira Code', 'JetBrains Mono', monospace",
+                fontFamily: "'Open Runde', sans-serif",
                 fontSize: "11.5px",
                 fontWeight: "600",
                 letterSpacing: "3px",
@@ -480,7 +480,7 @@ export default function FoundationOfCare() {
               color: "#64748B",
               maxWidth: "600px",
               margin: "0 auto",
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              fontFamily: "'Open Runde', sans-serif",
             }}
           >
             From the moment of rescue to full recovery — every animal that enters our care

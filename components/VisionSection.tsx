@@ -174,14 +174,14 @@ const VisionSection: React.FC = () => {
 
           <h2
             className="text-2xl font-semibold text-[#1a1a1a] leading-tight mb-6"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Open Runde', sans-serif" }}
           >
             Param Namramuni Gurudev
           </h2>
 
           <blockquote
             className="relative z-10 text-base leading-[1.8] text-[#3a3a3a] italic mb-6"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Open Runde', sans-serif" }}
           >
             &ldquo;The birth of any human being is purposeful only with the birth of humanity in our hearts. Compassion beyond humanity is the highest form of service.&rdquo;
           </blockquote>
