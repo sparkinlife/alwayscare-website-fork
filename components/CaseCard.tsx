@@ -161,20 +161,20 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
       {/* Image area */}
       <div className="relative">
         {thumbnailUrl && !imgError ? (
-          <>
-            {/* Shimmer placeholder */}
-            {!imgLoaded && (
-              <div className="img-shimmer w-full" style={{ aspectRatio: '4/5' }} />
-            )}
+          <div className="relative">
             <img
               src={thumbnailUrl}
               alt={`Case #${liveCase.caseId}`}
               loading="lazy"
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgError(true)}
-              className={`w-full h-auto ${imgLoaded ? 'block' : 'hidden'}`}
+              className="w-full h-auto"
             />
-          </>
+            {/* Shimmer overlay — sits on top until image loads */}
+            {!imgLoaded && (
+              <div className="absolute inset-0 img-shimmer" />
+            )}
+          </div>
         ) : (
           /* No image placeholder */
           <div className="w-full bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center" style={{ aspectRatio: '4/5' }}>
