@@ -348,7 +348,11 @@ const Hero: React.FC = () => {
             <p className="animate-fadeUp text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Open Runde', sans-serif", animationDelay: '200ms' }}>
               On call, free first-aid and treatment for every injured street animal.
             </p>
-            <div className="animate-fadeUp h-0.5 w-16 bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 rounded-full mt-4" style={{ animationDelay: '250ms' }} />
+            <div className="animate-fadeUp flex items-center gap-3 mt-4" style={{ animationDelay: '250ms' }}>
+              <div className="h-0.5 w-16 bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 rounded-full" />
+              <img src="/images/aysg-logo.png" alt="AYSG" className="w-6 h-6 rounded" />
+              <span className="text-sm font-semibold bg-gradient-to-r from-amber-700 via-yellow-400 to-amber-700 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Powered by Arham Yuva Seva Group</span>
+            </div>
           </div>
 
           {/* 2. Impact Stats Row */}
