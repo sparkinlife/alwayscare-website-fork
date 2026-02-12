@@ -395,7 +395,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* 3. Live Cases Feed (Light Theme) */}
-          <div className="animate-fadeUp bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-3 md:p-4 mb-3 flex flex-col shadow-sm" style={{ animationDelay: '400ms' }}>
+          <div className="animate-fadeUp flex-1 min-h-0 bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-3 md:p-4 mb-3 flex flex-col shadow-sm" style={{ animationDelay: '400ms' }}>
             <div className="flex justify-between items-center mb-2">
               <h2 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse ring-4 ring-red-500/10"></span>
@@ -405,7 +405,7 @@ const Hero: React.FC = () => {
               <span className="btn-shine text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
             
-            <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px]">
+            <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 min-h-0">
               {liveCasesLoading ? (
                 // Loading skeleton
                 Array.from({ length: 3 }).map((_, i) => (
@@ -429,7 +429,7 @@ const Hero: React.FC = () => {
 
           {/* 4. Action Buttons (Donate + Volunteer) */}
           {/* Stack on mobile, row on larger screens */}
-          <div className="animate-fadeUp flex flex-row gap-3 mt-auto justify-center" style={{ animationDelay: '500ms' }}>
+          <div className="animate-fadeUp flex flex-row gap-3 justify-center" style={{ animationDelay: '500ms' }}>
              <a href="#donate" className="btn-shine bg-red-600 hover:bg-red-700 active:scale-95 text-white px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm">
                 <Heart size={16} className="fill-current" />
                 Donate Now
