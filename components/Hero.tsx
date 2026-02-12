@@ -405,7 +405,7 @@ const Hero: React.FC = () => {
               <span className="btn-shine text-xs text-amber-700 bg-amber-100 border border-amber-200 px-2 py-1 rounded font-medium">Real-time Feed</span>
             </div>
             
-            <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px] lg:max-h-none">
+            <div className="space-y-3 overflow-y-auto scrollbar-hide pr-2 flex-1 max-h-[300px]">
               {liveCasesLoading ? (
                 // Loading skeleton
                 Array.from({ length: 3 }).map((_, i) => (

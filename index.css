@@ -293,6 +293,60 @@ html {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
+/* Premium button styles (Donate section) */
+.premium-btn {
+  border-radius: 999px;
+  font-weight: 700;
+  transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.premium-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgb(15 23 42 / 0.16);
+}
+
+.premium-btn-dark {
+  color: #fff;
+  background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+}
+
+.premium-heading {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+/* Soft floating blobs */
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float-soft {
+  animation: floatSoft 7s ease-in-out infinite;
+}
+
+/* Soft blue glow for featured card */
+@keyframes glowSoft {
+  0%, 100% { box-shadow: 0 0 0 rgba(59, 130, 246, 0); }
+  50% { box-shadow: 0 12px 32px rgba(59, 130, 246, 0.24); }
+}
+
+.animate-glow-soft {
+  animation: glowSoft 3.2s ease-in-out infinite;
+}
+
+/* Card lift on hover */
+.card-lift {
+  transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgb(15 23 42 / 0.12);
+}
+
 /* Light rays background container */
 .light-rays-container {
   width: 100%;
