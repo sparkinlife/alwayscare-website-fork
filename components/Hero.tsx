@@ -395,7 +395,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* 3. Live Cases Feed (Light Theme) */}
-          <div className="animate-fadeUp flex-1 bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-3 md:p-4 mb-3 flex flex-col shadow-sm" style={{ animationDelay: '400ms' }}>
+          <div className="animate-fadeUp bg-amber-50/50 border border-amber-100 animate-borderGlow rounded-2xl p-3 md:p-4 mb-3 flex flex-col shadow-sm" style={{ animationDelay: '400ms' }}>
             <div className="flex justify-between items-center mb-2">
               <h2 className="font-bold flex items-center gap-2 text-slate-900 text-sm md:text-base">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse ring-4 ring-red-500/10"></span>
