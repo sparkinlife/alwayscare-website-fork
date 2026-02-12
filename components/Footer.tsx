@@ -14,8 +14,7 @@ const Footer: React.FC = () => {
           {/* About Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <Heart className="w-8 h-8 text-red-500 fill-current" />
-              <span className="text-xl font-bold">Always Care</span>
+              <img src="/images/arham-alwayscare-logo.png" alt="Always Care" className="h-10 w-auto object-contain" />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 max-w-md">
               Arham Yuva Seva Group operates India's largest free animal ambulance network.

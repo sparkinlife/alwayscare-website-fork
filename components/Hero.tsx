@@ -346,7 +346,7 @@ const Hero: React.FC = () => {
               India's Fast & Free <br /><span className="bg-gradient-to-r from-red-600 via-rose-500 to-red-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Animal Ambulance Network</span>
             </h1>
             <p className="animate-fadeUp text-slate-700 text-base md:text-lg font-normal leading-relaxed max-w-xl" style={{ fontFamily: "'Open Runde', sans-serif", animationDelay: '200ms' }}>
-              On call, free first-aid and treatment for every injured street animal.
+              On-site, free first-aid and treatment for every injured street animal.
             </p>
             <div className="animate-fadeUp flex items-center gap-3 mt-2" style={{ animationDelay: '250ms' }}>
               <div className="h-0.5 w-16 bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 rounded-full" />
@@ -429,13 +429,13 @@ const Hero: React.FC = () => {
 
           {/* 4. Action Buttons (Donate + Volunteer) */}
           {/* Stack on mobile, row on larger screens */}
-          <div className="animate-fadeUp flex flex-col sm:flex-row gap-3 mt-auto" style={{ animationDelay: '500ms' }}>
-             <a href="#donate" className="btn-shine flex-1 bg-red-600 hover:bg-red-700 active:scale-95 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm md:text-base">
-                <Heart size={18} className="fill-current" />
+          <div className="animate-fadeUp flex flex-row gap-3 mt-auto justify-center" style={{ animationDelay: '500ms' }}>
+             <a href="#donate" className="btn-shine bg-red-600 hover:bg-red-700 active:scale-95 text-white px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm">
+                <Heart size={16} className="fill-current" />
                 Donate Now
              </a>
-             <a href="#volunteer" className="btn-shine flex-1 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white py-3 md:py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm md:text-base">
-                <UserPlus size={18} />
+             <a href="#volunteer" className="btn-shine bg-slate-900 hover:bg-slate-800 active:scale-95 text-white px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-200 text-sm whitespace-nowrap">
+                <UserPlus size={16} />
                 Join as Volunteer
              </a>
           </div>
@@ -553,8 +553,8 @@ const Hero: React.FC = () => {
              <div className="flex items-start gap-2 mb-3">
                <span className="text-xl leading-none mt-0.5">❤️</span>
                <div>
-                 <h4 className="font-bold text-sm text-slate-900">Save Street Animals</h4>
-                 <p className="text-[11px] text-slate-500 whitespace-nowrap">₹100 helps one injured animal · <span className="text-red-600 font-semibold">1.5L+ saved</span></p>
+                 <h4 className="font-bold text-sm text-slate-900">Save Injured Street Animals</h4>
+                 <p className="text-xs text-slate-700 whitespace-nowrap">₹100 helps one injured animal · <span className="text-red-600 font-semibold">1.5L+ saved</span></p>
                </div>
              </div>
 
