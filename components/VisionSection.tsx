@@ -8,7 +8,7 @@ const VisionSection: React.FC = () => {
   return (
     <section ref={ref} className="relative overflow-hidden">
       {/* ── Desktop: full-viewport split layout ── */}
-      <div className="hidden md:block relative min-h-screen">
+      <div className="hidden lg:block relative min-h-screen">
         {/* Background image */}
         <img
           src="/images/gurudev-website.jpg"
@@ -105,7 +105,7 @@ const VisionSection: React.FC = () => {
       </div>
 
       {/* ── Mobile: stacked layout ── */}
-      <div className="md:hidden">
+      <div className="lg:hidden pb-10">
         {/* Image with dark overlay */}
         <div className="relative h-[60vh]">
           <img
