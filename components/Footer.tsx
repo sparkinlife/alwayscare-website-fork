@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Heart, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -13,8 +13,10 @@ const Footer: React.FC = () => {
 
           {/* About Section */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-4 mb-4">
               <img src="/images/arham-alwayscare-logo.png" alt="Always Care" className="h-10 w-auto object-contain" />
+              <div className="w-px h-8 bg-white/10" />
+              <img src="/images/aysg-logo.png" alt="Arham Yuva Seva Group" className="h-12 w-auto object-contain" />
             </div>
             <p className="text-[#A8A29E] text-sm leading-relaxed mb-6 max-w-md">
               Arham Yuva Seva Group operates India's largest free animal ambulance network.

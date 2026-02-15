@@ -71,14 +71,11 @@ const GalleryRow = React.forwardRef<HTMLDivElement, { items: MediaItem[] }>(
 );
 GalleryRow.displayName = 'GalleryRow';
 
-const SEVA_LETTERS = ['S', 'E', 'V', 'A'];
-
 const PhotoGallery: React.FC = () => {
   const { ref: revealRef, isVisible } = useScrollReveal({ threshold: 0.05 });
   const sectionRef = useRef<HTMLElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
-  const sevaRef = useRef<HTMLHeadingElement>(null);
   const rafRef = useRef<number>(0);
   const autoOffsetRef = useRef(0);
   const prevTimeRef = useRef(0);
@@ -146,13 +143,6 @@ const PhotoGallery: React.FC = () => {
       if (row2Ref.current) {
         row2Ref.current.style.transform = `translateX(${-(row2InitRef.current - autoVal - scrollDriven)}px)`;
       }
-      // SEVA: scroll-driven letter spacing
-      if (sevaRef.current) {
-        const gapOffset = Math.max(-8, Math.min(16, scrollDriven * 0.04));
-        const baseGap = window.innerWidth >= 1024 ? 24 : window.innerWidth >= 768 ? 16 : 8;
-        sevaRef.current.style.gap = `${baseGap + gapOffset}px`;
-      }
-
       rafRef.current = requestAnimationFrame(animate);
     };
 
@@ -162,7 +152,7 @@ const PhotoGallery: React.FC = () => {
 
   return (
     <section
-      className="py-16 md:py-24 bg-[#FFFBF5] overflow-hidden"
+      className="relative py-12 md:py-16 bg-[#FFFBF5] overflow-hidden"
       ref={(el) => {
         sectionRef.current = el;
         if (typeof revealRef === 'function') {
@@ -171,24 +161,21 @@ const PhotoGallery: React.FC = () => {
           (revealRef as React.MutableRefObject<HTMLElement | null>).current = el;
         }
       }}
+      style={{ filter: 'sepia(0.08) saturate(1.1)' }}
     >
       <GalleryRow ref={row1Ref} items={row1Items} />
 
-      {/* S E V A divider */}
-      <div className="py-8 md:py-12 text-center">
+      {/* Overlay heading between rows */}
+      <div className={`scroll-reveal ${isVisible ? 'visible' : ''} relative z-10 py-8 md:py-10 text-center`}>
+        <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#B8650A] mb-3">
+          On the Ground
+        </p>
         <h2
-          ref={sevaRef}
-          className="flex items-center justify-center select-none leading-none"
+          className="text-[clamp(24px,4vw,42px)] font-extrabold text-[#292524] leading-[1.1] tracking-[-0.03em]"
+          style={{ fontFamily: "'Open Runde', sans-serif" }}
         >
-          {SEVA_LETTERS.map((letter, i) => (
-            <span
-              key={letter}
-              className={`scroll-reveal ${isVisible ? 'visible' : ''} inline-block text-6xl md:text-8xl lg:text-[10rem] font-black bg-gradient-to-r from-[#E8E0D8] via-[#F9E8C9] to-[#E8E0D8] bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer cursor-default hover:from-[#B7312C] hover:via-[#B8650A] hover:to-[#B7312C] hover:scale-110 transition-transform duration-300 seva-letter`}
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              {letter}
-            </span>
-          ))}
+          The <span className="bg-gradient-to-r from-[#B7312C] via-[#B8650A] to-[#B7312C] bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Seva</span> We Do,<br />
+          <span className="text-[#78716C] font-bold">Every Single Day</span>
         </h2>
       </div>
 

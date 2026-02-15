@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const TermsConditionsPage: React.FC = () => {
+  usePageMeta({
+    title: 'Terms & Conditions — Arham Animal Ambulance',
+    description: 'Terms and conditions for using the Arham Animal Ambulance website.',
+    canonical: 'https://arhamanimalambulance.com/terms-conditions',
+  });
+
   useEffect(() => {
-    document.title = 'Terms & Conditions — Always Care Project';
     window.scrollTo(0, 0);
-    return () => { document.title = 'Always Care Project'; };
   }, []);
 
   return (

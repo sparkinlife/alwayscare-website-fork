@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const RefundCancellationPage: React.FC = () => {
+  usePageMeta({
+    title: 'Refund & Cancellation — Arham Animal Ambulance',
+    description: 'Refund and cancellation policy for donations to Arham Animal Ambulance.',
+    canonical: 'https://arhamanimalambulance.com/refund-cancellation',
+  });
+
   useEffect(() => {
-    document.title = 'Refund & Cancellation Policy — Always Care Project';
     window.scrollTo(0, 0);
-    return () => { document.title = 'Always Care Project'; };
   }, []);
 
   return (

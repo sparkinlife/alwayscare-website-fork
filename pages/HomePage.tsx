@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import Hero from '../components/Hero';
 import PhotoGallery from '../components/PhotoGallery';
 import FoundationOfCare from '../components/FoundationOfCare';
@@ -10,6 +11,12 @@ import Volunteer from '../components/Volunteer';
 
 const HomePage: React.FC = () => {
   const location = useLocation();
+
+  usePageMeta({
+    title: 'Arham Animal Ambulance | Free 24/7 Animal Rescue Across India',
+    description: 'Find the nearest free animal ambulance in 40+ Indian cities. 24/7 emergency rescue, on-site treatment, and rehabilitation for injured street animals.',
+    canonical: 'https://arhamanimalambulance.com/',
+  });
 
   useEffect(() => {
     if (location.hash) {

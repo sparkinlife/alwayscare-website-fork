@@ -97,6 +97,17 @@ html {
   animation: fadeUp 0.4s ease-out both;
 }
 
+/* Letter-by-letter reveal for SplitText */
+@keyframes letterReveal {
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.animate-letter-reveal {
+  opacity: 0;
+  animation: letterReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -143,15 +154,6 @@ html {
   animation: borderGlow 3s ease-in-out infinite;
 }
 
-@keyframes slowPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.animate-slowPulse {
-  animation: slowPulse 3s ease-in-out infinite;
-}
-
 /* Scroll reveal animations — soft blur entrance */
 @keyframes revealUp {
   from { opacity: 0; transform: translateY(40px); filter: blur(2px); }
@@ -196,78 +198,6 @@ html {
   animation: dramaticReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.scroll-scale {
-  opacity: 0;
-  transform: scale(0.9);
-}
-
-.scroll-scale.visible {
-  animation: scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-/* Marquee animations */
-@keyframes marqueeLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes marqueeRight {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
-}
-
-.animate-marquee-left {
-  animation: marqueeLeft 40s linear infinite;
-}
-
-.animate-marquee-right {
-  animation: marqueeRight 40s linear infinite;
-}
-
-/* Premium badge glow for vision badge */
-@keyframes badgeGlow {
-  0%, 100% { box-shadow: 0 0 12px rgba(184,101,10,0.1); }
-  50% { box-shadow: 0 0 20px rgba(184,101,10,0.25); }
-}
-
-.animate-badgeGlow {
-  animation: badgeGlow 3s ease-in-out infinite;
-}
-
-/* Subtle floating animation for panels */
-@keyframes floatSubtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-.animate-float {
-  animation: floatSubtle 6s ease-in-out infinite;
-}
-
-/* Blue dot pulsing ring for user location on map */
-@keyframes pulseRing {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(3); opacity: 0; }
-}
-
-.user-location-pulse {
-  animation: pulseRing 1.5s ease-out infinite;
-}
-
-/* SEVA letter hover glow */
-.seva-letter {
-  transition: filter 0.3s ease, transform 0.3s ease;
-}
-
-.seva-letter:hover {
-  filter: drop-shadow(0 0 12px rgba(184, 101, 10, 0.5));
-}
-
 /* Vision section: card slide-in from left */
 @keyframes revealFromLeft {
   from { opacity: 0; transform: translateX(-60px); }
@@ -281,6 +211,45 @@ html {
 
 .scroll-reveal-left.visible {
   animation: revealFromLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Marquee animation for gallery */
+@keyframes marqueeLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 40s linear infinite;
+}
+
+/* Light rays background container */
+.light-rays-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Premium badge glow for vision badge */
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(184,101,10,0.1); }
+  50% { box-shadow: 0 0 20px rgba(184,101,10,0.25); }
+}
+
+.animate-badgeGlow {
+  animation: badgeGlow 3s ease-in-out infinite;
+}
+
+/* Blue dot pulsing ring for user location on map */
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+.user-location-pulse {
+  animation: pulseRing 1.5s ease-out infinite;
 }
 
 /* Masonry grid layout */
@@ -331,25 +300,8 @@ html {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Premium button styles (Donate section) */
-.premium-btn {
-  border-radius: 999px;
-  font-weight: 700;
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1), background-color 220ms ease;
-}
-
-.premium-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(28, 25, 23, 0.16);
-}
-
-.premium-btn-dark {
-  color: #fff;
-  background: linear-gradient(180deg, #292524 0%, #1C1917 100%);
-}
-
 .premium-heading {
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   line-height: 1.05;
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -364,53 +316,6 @@ html {
 .animate-float-soft {
   animation: floatSoft 7s ease-in-out infinite;
 }
-
-/* Soft warm glow for featured card */
-@keyframes glowSoft {
-  0%, 100% { box-shadow: 0 0 0 rgba(184, 101, 10, 0); }
-  50% { box-shadow: 0 12px 32px rgba(184, 101, 10, 0.18); }
-}
-
-.animate-glow-soft {
-  animation: glowSoft 3.2s ease-in-out infinite;
-}
-
-/* Card lift on hover */
-.card-lift {
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1), border-color 260ms ease;
-}
-
-.card-lift:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(28, 25, 23, 0.12);
-}
-
-/* Light rays background container */
-.light-rays-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* ── ROUND 2: MOTION & TEXTURE UTILITIES ── */
-
-/* Stagger children on scroll reveal */
-.stagger-children > * {
-  opacity: 0;
-  transform: translateY(20px);
-  filter: blur(2px);
-}
-.stagger-children.visible > * {
-  animation: revealUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.stagger-children.visible > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children.visible > *:nth-child(2) { animation-delay: 80ms; }
-.stagger-children.visible > *:nth-child(3) { animation-delay: 160ms; }
-.stagger-children.visible > *:nth-child(4) { animation-delay: 240ms; }
-.stagger-children.visible > *:nth-child(5) { animation-delay: 320ms; }
-.stagger-children.visible > *:nth-child(6) { animation-delay: 400ms; }
 
 /* Grain texture overlay for dark sections */
 .texture-grain {
@@ -441,16 +346,3 @@ html {
   z-index: 1;
 }
 
-/* Animated underline — draws in on reveal */
-.underline-reveal {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-position: 0% 100%;
-  background-repeat: no-repeat;
-  background-size: 0% 3px;
-  padding-bottom: 2px;
-  transition: background-size 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.scroll-reveal.visible .underline-reveal,
-.underline-reveal.visible {
-  background-size: 100% 3px;
-}

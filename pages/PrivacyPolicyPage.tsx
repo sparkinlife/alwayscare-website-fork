@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const PrivacyPolicyPage: React.FC = () => {
+  usePageMeta({
+    title: 'Privacy Policy — Arham Animal Ambulance',
+    description: 'Privacy policy for Arham Animal Ambulance.',
+    canonical: 'https://arhamanimalambulance.com/privacy-policy',
+  });
+
   useEffect(() => {
-    document.title = 'Privacy Policy — Always Care Project';
     window.scrollTo(0, 0);
-    return () => { document.title = 'Always Care Project'; };
   }, []);
 
   return (

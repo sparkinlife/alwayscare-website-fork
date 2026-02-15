@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { AlertCircle, RefreshCw, SearchX, Loader2 } from 'lucide-react';
 import { useLiveCases } from '../hooks/useLiveCases';
 import { LiveCase } from '../types';
@@ -23,11 +24,11 @@ const LiveImpactPage: React.FC = () => {
   // Modal
   const [selectedCase, setSelectedCase] = useState<LiveCase | null>(null);
 
-  // Page title
-  useEffect(() => {
-    document.title = 'Live Impact — Always Care Project';
-    return () => { document.title = 'Always Care Project'; };
-  }, []);
+  usePageMeta({
+    title: 'Live Impact — Arham Animal Ambulance',
+    description: 'See real-time rescue cases. Browse live updates of animals rescued, treated, and rehabilitated across India.',
+    canonical: 'https://arhamanimalambulance.com/live-impact',
+  });
 
   // Reset pagination when search or sort changes
   useEffect(() => {

@@ -1,0 +1,21 @@
+# Fonts - immutable, long cache
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images - long cache
+/images/*
+  Cache-Control: public, max-age=2592000
+
+# Static assets (JS/CSS with hashes from Vite)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML - short cache for SPA revalidation
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Security headers
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
