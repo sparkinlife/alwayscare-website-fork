@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Camera, ChevronRight } from 'lucide-react';
 import { LiveCase } from '../types';
 import { formatTimeAgo, formatStatus, getGoogleDriveThumbnailUrl } from '../utils';
-import { useScrollReveal } from '../hooks/useScrollReveal';
+
 
 interface CaseCardProps {
   liveCase: LiveCase;
@@ -143,7 +143,6 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
 const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => void }> = ({ liveCase, onSelect }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const { ref, isVisible } = useScrollReveal({ threshold: 0.08, rootMargin: '50px' });
   const thumbnailUrl = getGoogleDriveThumbnailUrl(liveCase.preTreatmentPhoto);
   const hasImage = !!thumbnailUrl && !imgError;
   const isOnTheWay = liveCase.status.toUpperCase() === 'ON_THE_WAY' || liveCase.status.toUpperCase() === 'IN_PROGRESS';
@@ -151,12 +150,11 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
 
   return (
     <div
-      ref={ref}
       onClick={() => onSelect(liveCase)}
-      className={`masonry-card ${isVisible ? 'masonry-card-visible' : 'masonry-card-hidden'} bg-white rounded-[14px] overflow-hidden shadow-sm border border-transparent hover:border-[#F9E8C9] cursor-pointer group transition-all duration-300 ${
+      className={`masonry-card bg-white rounded-[14px] overflow-hidden shadow-sm border border-transparent hover:border-[#F9E8C9] cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${
         isOnTheWay ? 'rescue-active' : ''
       }`}
-      style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)', willChange: 'transform, opacity' }}
+      style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
     >
       {/* Image area */}
       <div className="relative">
