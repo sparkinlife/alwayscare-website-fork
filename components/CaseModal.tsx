@@ -10,33 +10,33 @@ interface CaseModalProps {
 
 const conditionClasses = (condition: string): string => {
   const c = condition.toUpperCase();
-  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-[#FDEAEA] text-[#B7312C] border-[#F5C5C3]';
-  if (c === 'MODERATE' || c === 'MILD') return 'bg-[#FEF3E7] text-[#B8650A] border-[#FDDBB8]';
-  return 'bg-[#E8F0E9] text-[#5F8A65] border-[#C5DBC8]';
+  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-red-100 text-red-700 border-red-200';
+  if (c === 'MODERATE' || c === 'MILD') return 'bg-amber-100 text-amber-700 border-amber-200';
+  return 'bg-green-100 text-green-700 border-green-200';
 };
 
 const statusClasses = (status: string): string => {
   const s = status.toUpperCase();
-  if (s === 'CASE_COMPLETED') return 'bg-[#E8F0E9] text-[#5F8A65] border-[#C5DBC8]';
-  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-[#FEF3E7] text-[#B8650A] border-[#FDDBB8]';
-  if (s === 'ANIMAL_NOT_FOUND') return 'bg-[#F5F0EB] text-[#78716C] border-[#E8E0D8]';
-  return 'bg-[#FEF7ED] text-[#B8650A] border-[#F9E8C9]';
+  if (s === 'CASE_COMPLETED') return 'bg-green-50 text-green-600 border-green-100';
+  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-amber-50 text-amber-600 border-amber-100';
+  if (s === 'ANIMAL_NOT_FOUND') return 'bg-slate-100 text-slate-500 border-slate-200';
+  return 'bg-blue-50 text-blue-600 border-blue-100';
 };
 
 const statusDotClass = (status: string): string => {
   const s = status.toUpperCase();
-  if (s === 'CASE_COMPLETED') return 'bg-[#5F8A65]';
-  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-[#B8650A] animate-pulse';
-  if (s === 'ANIMAL_NOT_FOUND') return 'bg-[#A8A29E]';
-  return 'bg-[#B8650A]';
+  if (s === 'CASE_COMPLETED') return 'bg-green-500';
+  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-amber-500 animate-pulse';
+  if (s === 'ANIMAL_NOT_FOUND') return 'bg-slate-400';
+  return 'bg-blue-500';
 };
 
 const recommendationClasses = (rec: string): string => {
   const r = rec.toUpperCase();
-  if (r === 'PROPER_FOOD_AND_CARE') return 'bg-[#E8F0E9] text-[#5F8A65]';
-  if (r === 'FOLLOW_UP_NEEDED') return 'bg-[#FEF3E7] text-[#B8650A]';
-  if (r === 'REFERRED_TO_HOSPITAL') return 'bg-[#FDEAEA] text-[#B7312C]';
-  return 'bg-[#F5F0EB] text-[#57534E]';
+  if (r === 'PROPER_FOOD_AND_CARE') return 'bg-green-100 text-green-700';
+  if (r === 'FOLLOW_UP_NEEDED') return 'bg-amber-100 text-amber-700';
+  if (r === 'REFERRED_TO_HOSPITAL') return 'bg-red-100 text-red-700';
+  return 'bg-slate-100 text-slate-600';
 };
 
 const formatRecommendation = (rec: string): string => {
@@ -61,7 +61,7 @@ const PreTreatmentImage: React.FC<{ url: string; caseId: string }> = ({ url, cas
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#FEF3E7] text-[#B8650A] border border-[#F9E8C9] text-sm font-medium hover:bg-[#FEF3E7] transition-colors"
+        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 text-sm font-medium hover:bg-blue-100 transition-colors"
       >
         <Camera size={14} /> View Pre-Treatment Photo
       </a>
@@ -75,10 +75,10 @@ const PreTreatmentImage: React.FC<{ url: string; caseId: string }> = ({ url, cas
           src={thumbnailUrl}
           alt={`Pre-treatment photo for Case #${caseId}`}
           onError={() => setImgError(true)}
-          className="w-full rounded-lg object-cover max-h-[300px] bg-[#E8E0D8]"
+          className="w-full rounded-lg object-cover max-h-[300px] bg-slate-200"
         />
         <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
-          <span className="opacity-0 group-hover/img:opacity-100 transition-opacity bg-white/90 text-[#44403C] text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
+          <span className="opacity-0 group-hover/img:opacity-100 transition-opacity bg-white/90 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
             <ExternalLink size={12} /> Open full size
           </span>
         </div>
@@ -118,11 +118,11 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-[#E8E0D8] p-5 rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-white border-b border-slate-100 p-5 rounded-t-2xl z-10">
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold text-[#292524]">Case #{liveCase.caseId}</h2>
+                <h2 className="text-lg font-bold text-slate-900">Case #{liveCase.caseId}</h2>
                 <span className={`text-xs px-2 py-0.5 rounded border font-medium ${conditionClasses(liveCase.condition)}`}>
                   {liveCase.condition}
                 </span>
@@ -131,14 +131,14 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
                   {formatStatus(liveCase.status)}
                 </span>
               </div>
-              <div className="text-sm text-[#78716C] mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
-              <div className="text-xs text-[#A8A29E] mt-1">
+              <div className="text-sm text-slate-500 mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
+              <div className="text-xs text-slate-400 mt-1">
                 {formatTimeAgo(liveCase.caseDate)} &bull; {formatDateTime(liveCase.caseDate)}
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-[#F5F0EB] transition-colors text-[#A8A29E] hover:text-[#57534E] shrink-0"
+              className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600 shrink-0"
               aria-label="Close modal"
             >
               <X size={20} />
@@ -150,17 +150,17 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
         <div className="p-5 space-y-4">
 
           {/* Rescue Info */}
-          <div className="bg-[#FAF7F4] rounded-xl p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-[#44403C] mb-2">Rescue Info</h3>
+          <div className="bg-slate-50 rounded-xl p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Rescue Info</h3>
             {liveCase.address && (
-              <div className="flex items-start gap-2 text-sm text-[#57534E]">
-                <MapPin size={14} className="text-[#A8A29E] mt-0.5 shrink-0" />
+              <div className="flex items-start gap-2 text-sm text-slate-600">
+                <MapPin size={14} className="text-slate-400 mt-0.5 shrink-0" />
                 <span>{liveCase.address}</span>
               </div>
             )}
             {liveCase.informerName && (
-              <div className="flex items-start gap-2 text-sm text-[#57534E]">
-                <User size={14} className="text-[#A8A29E] mt-0.5 shrink-0" />
+              <div className="flex items-start gap-2 text-sm text-slate-600">
+                <User size={14} className="text-slate-400 mt-0.5 shrink-0" />
                 <span>Reported by: {liveCase.informerName}</span>
               </div>
             )}
@@ -168,8 +168,8 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
               <div className="flex items-center gap-2 mt-1">
                 <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                   liveCase.caseType === 'FOLLOW_UP_CASE'
-                    ? 'bg-[#FEF3E7] text-[#B8650A] border border-[#F9E8C9]'
-                    : 'bg-[#FEF3E7] text-[#B8650A] border border-[#F9E8C9]'
+                    ? 'bg-purple-50 text-purple-600 border border-purple-100'
+                    : 'bg-blue-50 text-blue-600 border border-blue-100'
                 }`}>
                   {liveCase.caseType === 'FOLLOW_UP_CASE' ? 'Follow-up Case' : 'New Case'}
                 </span>
@@ -179,20 +179,20 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
 
           {/* Medical Details (conditional) */}
           {hasMedicalData && (
-            <div className="bg-[#FAF7F4] rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-[#44403C]">Medical Details</h3>
+            <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-slate-700">Medical Details</h3>
 
               {liveCase.doctorObservation && (
                 <div>
-                  <p className="text-xs text-[#A8A29E] font-medium mb-0.5">Observation</p>
-                  <p className="text-sm text-[#44403C]">{liveCase.doctorObservation}</p>
+                  <p className="text-xs text-slate-400 font-medium mb-0.5">Observation</p>
+                  <p className="text-sm text-slate-700">{liveCase.doctorObservation}</p>
                 </div>
               )}
 
               {liveCase.affectedBodyPart && (
                 <div>
-                  <p className="text-xs text-[#A8A29E] font-medium mb-0.5">Affected Area</p>
-                  <span className="text-xs px-2 py-0.5 rounded bg-[#E8E0D8] text-[#57534E] font-medium">
+                  <p className="text-xs text-slate-400 font-medium mb-0.5">Affected Area</p>
+                  <span className="text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-medium">
                     {liveCase.affectedBodyPart}
                   </span>
                 </div>
@@ -200,15 +200,15 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
 
               {liveCase.treatmentGiven && (
                 <div>
-                  <p className="text-xs text-[#A8A29E] font-medium mb-0.5">Treatment</p>
-                  <p className="text-sm text-[#44403C]">{liveCase.treatmentGiven}</p>
+                  <p className="text-xs text-slate-400 font-medium mb-0.5">Treatment</p>
+                  <p className="text-sm text-slate-700">{liveCase.treatmentGiven}</p>
                 </div>
               )}
 
               {liveCase.medicationDosage && (
                 <div>
-                  <p className="text-xs text-[#A8A29E] font-medium mb-1">Medication</p>
-                  <div className="font-mono text-xs text-[#292524] bg-white rounded-lg p-3 border border-[#E8E0D8] space-y-1">
+                  <p className="text-xs text-slate-400 font-medium mb-1">Medication</p>
+                  <div className="font-mono text-xs text-slate-800 bg-white rounded-lg p-3 border border-slate-200 space-y-1">
                     {liveCase.medicationDosage.split('\n').map((line, i) => (
                       <div key={i}>{line.trim()}</div>
                     ))}
@@ -218,7 +218,7 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
 
               {liveCase.recommendation && liveCase.recommendation !== 'NO' && (
                 <div>
-                  <p className="text-xs text-[#A8A29E] font-medium mb-0.5">Recommendation</p>
+                  <p className="text-xs text-slate-400 font-medium mb-0.5">Recommendation</p>
                   <span className={`text-xs px-2 py-1 rounded font-medium ${recommendationClasses(liveCase.recommendation)}`}>
                     {formatRecommendation(liveCase.recommendation)}
                   </span>
@@ -229,8 +229,8 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
 
           {/* Photos & Video (conditional) */}
           {hasPhotos && (
-            <div className="bg-[#FAF7F4] rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-[#44403C]">Photos & Video</h3>
+            <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-slate-700">Photos & Video</h3>
               {liveCase.preTreatmentPhoto && (
                 <PreTreatmentImage url={liveCase.preTreatmentPhoto} caseId={liveCase.caseId} />
               )}
@@ -239,7 +239,7 @@ const CaseModal: React.FC<CaseModalProps> = ({ liveCase, onClose }) => {
                   href={liveCase.postTreatmentPhotosAndVideosFolderURL}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#FEF3E7] text-[#B8650A] border border-[#F9E8C9] text-sm font-medium hover:bg-[#FEF3E7] transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 border border-purple-100 text-sm font-medium hover:bg-purple-100 transition-colors"
                 >
                   <Video size={14} /> View Post-Treatment Photos & Videos
                 </a>

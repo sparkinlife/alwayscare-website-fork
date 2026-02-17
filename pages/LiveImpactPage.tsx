@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { usePageMeta } from '../hooks/usePageMeta';
 import { AlertCircle, RefreshCw, SearchX, Loader2 } from 'lucide-react';
 import { useLiveCases } from '../hooks/useLiveCases';
 import { LiveCase } from '../types';
@@ -24,11 +23,11 @@ const LiveImpactPage: React.FC = () => {
   // Modal
   const [selectedCase, setSelectedCase] = useState<LiveCase | null>(null);
 
-  usePageMeta({
-    title: 'Live Impact — Arham Animal Ambulance',
-    description: 'See real-time rescue cases. Browse live updates of animals rescued, treated, and rehabilitated across India.',
-    canonical: 'https://arhamanimalambulance.com/live-impact',
-  });
+  // Page title
+  useEffect(() => {
+    document.title = 'Live Impact — Always Care Project';
+    return () => { document.title = 'Always Care Project'; };
+  }, []);
 
   // Reset pagination when search or sort changes
   useEffect(() => {
@@ -105,9 +104,9 @@ const LiveImpactPage: React.FC = () => {
               <div key={i} className="masonry-card bg-white rounded-[14px] overflow-hidden shadow-sm">
                 <div className="img-shimmer w-full" style={{ aspectRatio: i % 3 === 0 ? '1/1' : i % 3 === 1 ? '4/5' : '3/2' }} />
                 <div className="p-3 space-y-2">
-                  <div className="h-4 w-2/3 bg-[#E8E0D8] rounded animate-pulse" />
-                  <div className="h-3 w-full bg-[#F5F0EB] rounded animate-pulse" />
-                  <div className="h-3 w-1/2 bg-[#F5F0EB] rounded animate-pulse" />
+                  <div className="h-4 w-2/3 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-3 w-full bg-slate-100 rounded animate-pulse" />
+                  <div className="h-3 w-1/2 bg-slate-100 rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -117,12 +116,12 @@ const LiveImpactPage: React.FC = () => {
         {/* Error state */}
         {error && !loading && (
           <div className="text-center py-16">
-            <AlertCircle className="mx-auto mb-4 text-[#B7312C]" size={48} />
-            <h3 className="text-lg font-semibold text-[#44403C] mb-2">Failed to load cases</h3>
-            <p className="text-sm text-[#78716C] mb-4">{error}</p>
+            <AlertCircle className="mx-auto mb-4 text-red-400" size={48} />
+            <h3 className="text-lg font-semibold text-slate-700 mb-2">Failed to load cases</h3>
+            <p className="text-sm text-slate-500 mb-4">{error}</p>
             <button
               onClick={retry}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#B7312C] text-white rounded-lg hover:bg-[#9A2823] transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
             >
               <RefreshCw size={16} /> Try Again
             </button>
@@ -132,12 +131,12 @@ const LiveImpactPage: React.FC = () => {
         {/* Empty filter state */}
         {!loading && !error && filteredCases.length === 0 && (
           <div className="text-center py-16">
-            <SearchX className="mx-auto mb-4 text-[#D6CFC7]" size={48} />
-            <h3 className="text-lg font-semibold text-[#44403C] mb-2">No cases match your filters</h3>
-            <p className="text-sm text-[#78716C] mb-4">Try adjusting your search or filters to find what you're looking for.</p>
+            <SearchX className="mx-auto mb-4 text-slate-300" size={48} />
+            <h3 className="text-lg font-semibold text-slate-700 mb-2">No cases match your filters</h3>
+            <p className="text-sm text-slate-500 mb-4">Try adjusting your search or filters to find what you're looking for.</p>
             <button
               onClick={clearAllFilters}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#F5F0EB] text-[#44403C] rounded-lg hover:bg-[#E8E0D8] transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium"
             >
               Clear all filters
             </button>
@@ -147,7 +146,7 @@ const LiveImpactPage: React.FC = () => {
         {/* Cases grid */}
         {!loading && !error && filteredCases.length > 0 && (
           <>
-            <p className="text-sm text-[#78716C] mb-4">
+            <p className="text-sm text-slate-500 mb-4">
               Showing {visibleCases.length} of {filteredCases.length} cases
             </p>
 
@@ -162,11 +161,11 @@ const LiveImpactPage: React.FC = () => {
               <div className="text-center mt-8">
                 <button
                   onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#B7312C] text-white rounded-xl hover:bg-[#9A2823] transition-colors font-medium shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-sm"
                 >
                   <Loader2 size={16} /> Load More Cases
                 </button>
-                <p className="text-xs text-[#A8A29E] mt-2">
+                <p className="text-xs text-slate-400 mt-2">
                   {filteredCases.length - visibleCount} more remaining
                 </p>
               </div>

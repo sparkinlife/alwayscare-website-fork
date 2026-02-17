@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Camera, ChevronRight } from 'lucide-react';
 import { LiveCase } from '../types';
 import { formatTimeAgo, formatStatus, getGoogleDriveThumbnailUrl } from '../utils';
-
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 interface CaseCardProps {
   liveCase: LiveCase;
@@ -12,40 +12,40 @@ interface CaseCardProps {
 
 const conditionClasses = (condition: string): string => {
   const c = condition.toUpperCase();
-  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-[#FDEAEA] text-[#B7312C] border-[#F5C5C3]';
-  if (c === 'MODERATE' || c === 'MILD') return 'bg-[#FEF3E7] text-[#B8650A] border-[#FDDBB8]';
-  return 'bg-[#E8F0E9] text-[#5F8A65] border-[#C5DBC8]';
+  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-red-100 text-red-700 border-red-200';
+  if (c === 'MODERATE' || c === 'MILD') return 'bg-amber-100 text-amber-700 border-amber-200';
+  return 'bg-green-100 text-green-700 border-green-200';
 };
 
 const conditionOverlayClasses = (condition: string): string => {
   const c = condition.toUpperCase();
-  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-[#B7312C]/80 text-white';
-  if (c === 'MODERATE' || c === 'MILD') return 'bg-[#B8650A]/80 text-white';
-  return 'bg-[#5F8A65]/80 text-white';
+  if (c === 'CRITICAL' || c === 'SEVERE') return 'bg-red-600/80 text-white';
+  if (c === 'MODERATE' || c === 'MILD') return 'bg-amber-500/80 text-white';
+  return 'bg-green-600/80 text-white';
 };
 
 const statusClasses = (status: string): string => {
   const s = status.toUpperCase();
-  if (s === 'CASE_COMPLETED') return 'bg-[#E8F0E9] text-[#5F8A65] border-[#C5DBC8]';
-  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-[#FEF3E7] text-[#B8650A] border-[#FDDBB8]';
-  if (s === 'ANIMAL_NOT_FOUND') return 'bg-[#F5F0EB] text-[#78716C] border-[#E8E0D8]';
-  return 'bg-[#FEF7ED] text-[#B8650A] border-[#F9E8C9]';
+  if (s === 'CASE_COMPLETED') return 'bg-green-50 text-green-600 border-green-100';
+  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-amber-50 text-amber-600 border-amber-100';
+  if (s === 'ANIMAL_NOT_FOUND') return 'bg-slate-100 text-slate-500 border-slate-200';
+  return 'bg-blue-50 text-blue-600 border-blue-100';
 };
 
 const statusOverlayClasses = (status: string): string => {
   const s = status.toUpperCase();
-  if (s === 'CASE_COMPLETED') return 'bg-[#5F8A65]/80 text-white';
-  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-[#B8650A]/80 text-white';
-  if (s === 'ANIMAL_NOT_FOUND') return 'bg-[#78716C]/80 text-white';
-  return 'bg-[#B8650A]/80 text-white';
+  if (s === 'CASE_COMPLETED') return 'bg-green-600/80 text-white';
+  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-amber-500/80 text-white';
+  if (s === 'ANIMAL_NOT_FOUND') return 'bg-slate-500/80 text-white';
+  return 'bg-blue-600/80 text-white';
 };
 
 const statusDotClass = (status: string): string => {
   const s = status.toUpperCase();
-  if (s === 'CASE_COMPLETED') return 'bg-[#5F8A65]';
-  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-[#B8650A] animate-pulse';
-  if (s === 'ANIMAL_NOT_FOUND') return 'bg-[#A8A29E]';
-  return 'bg-[#B8650A]';
+  if (s === 'CASE_COMPLETED') return 'bg-green-500';
+  if (s === 'ON_THE_WAY' || s === 'IN_PROGRESS') return 'bg-amber-500 animate-pulse';
+  if (s === 'ANIMAL_NOT_FOUND') return 'bg-slate-400';
+  return 'bg-blue-500';
 };
 
 const animalEmoji = (type: string): string => {
@@ -61,10 +61,10 @@ const animalEmoji = (type: string): string => {
 
 const recommendationClasses = (rec: string): string => {
   const r = rec.toUpperCase();
-  if (r === 'PROPER_FOOD_AND_CARE') return 'bg-[#E8F0E9] text-[#5F8A65] border-[#C5DBC8]';
-  if (r === 'FOLLOW_UP_NEEDED') return 'bg-[#FEF3E7] text-[#B8650A] border-[#FDDBB8]';
-  if (r === 'REFERRED_TO_HOSPITAL') return 'bg-[#FDEAEA] text-[#B7312C] border-[#F5C5C3]';
-  return 'bg-[#FAF7F4] text-[#57534E] border-[#E8E0D8]';
+  if (r === 'PROPER_FOOD_AND_CARE') return 'bg-green-50 text-green-700 border-green-100';
+  if (r === 'FOLLOW_UP_NEEDED') return 'bg-amber-50 text-amber-700 border-amber-100';
+  if (r === 'REFERRED_TO_HOSPITAL') return 'bg-red-50 text-red-700 border-red-100';
+  return 'bg-slate-50 text-slate-600 border-slate-100';
 };
 
 const formatRecommendation = (rec: string): string => {
@@ -76,23 +76,23 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
     {/* Header */}
     <div className="flex justify-between items-start">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm font-bold text-[#292524] shrink-0">Case #{liveCase.caseId}</span>
+        <span className="text-sm font-bold text-slate-900 shrink-0">Case #{liveCase.caseId}</span>
         <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0 ${conditionClasses(liveCase.condition)}`}>
           {liveCase.condition}
         </span>
       </div>
-      <span className="text-xs font-medium text-[#A8A29E] whitespace-nowrap ml-2 shrink-0">
+      <span className="text-xs font-medium text-slate-400 whitespace-nowrap ml-2 shrink-0">
         {formatTimeAgo(liveCase.caseDate)}
       </span>
     </div>
 
     {/* Animal + Ambulance */}
-    <div className="text-xs text-[#78716C] mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
+    <div className="text-xs text-slate-500 mt-1">{liveCase.animalType} &bull; {liveCase.siteName}</div>
 
     {/* Address (conditional) */}
     {liveCase.address && (
-      <div className="flex items-center gap-1 text-xs text-[#78716C] mt-1">
-        <MapPin size={12} className="text-[#A8A29E] shrink-0" />
+      <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+        <MapPin size={12} className="text-slate-400 shrink-0" />
         <span className="truncate">{liveCase.address}</span>
       </div>
     )}
@@ -100,13 +100,13 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
     {/* Doctor observation (conditional) */}
     {liveCase.doctorObservation && (
       <div className="mt-2">
-        <p className="text-xs text-[#57534E] line-clamp-2">
-          <span className="font-semibold text-[#78716C]">Observation:</span> {liveCase.doctorObservation}
+        <p className="text-xs text-slate-600 line-clamp-2">
+          <span className="font-semibold text-slate-500">Observation:</span> {liveCase.doctorObservation}
         </p>
         {liveCase.affectedBodyPart && (
           <div className="mt-1 flex items-center gap-1">
-            <span className="text-[10px] font-semibold text-[#78716C]">Affected Area:</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F5F0EB] text-[#78716C]">
+            <span className="text-[10px] font-semibold text-slate-500">Affected Area:</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
               {liveCase.affectedBodyPart}
             </span>
           </div>
@@ -115,18 +115,18 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
     )}
 
     {/* Bottom bar */}
-    <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[#FAF7F4] overflow-x-auto scrollbar-hide">
+    <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-50 overflow-x-auto scrollbar-hide">
       {liveCase.caseType === 'FOLLOW_UP_CASE' && (
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FEF3E7] text-[#B8650A] border border-[#F9E8C9] font-medium whitespace-nowrap shrink-0">
+        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-600 border border-purple-100 font-medium whitespace-nowrap shrink-0">
           Follow-up
         </span>
       )}
       {!compact && (liveCase.preTreatmentPhoto ? (
-        <span className="flex items-center gap-1 text-[10px] text-[#B8650A] bg-[#FEF3E7] px-1.5 py-0.5 rounded border border-[#F9E8C9] whitespace-nowrap shrink-0">
+        <span className="flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap shrink-0">
           <Camera size={10} /> Photo
         </span>
       ) : (
-        <span className="flex items-center gap-1 text-[10px] text-[#A8A29E] bg-[#FAF7F4] px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
+        <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
           <Camera size={10} /> No Photos
         </span>
       ))}
@@ -134,7 +134,7 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
         <span className={`w-1.5 h-1.5 rounded-full ${statusDotClass(liveCase.status)}`}></span>
         {formatStatus(liveCase.status)}
       </span>
-      <ChevronRight size={14} className="text-[#D6CFC7] group-hover:text-[#D87E0F] transition-colors ml-auto shrink-0" />
+      <ChevronRight size={14} className="text-slate-300 group-hover:text-red-400 transition-colors ml-auto shrink-0" />
     </div>
   </>
 );
@@ -143,6 +143,7 @@ const CardContent: React.FC<{ liveCase: LiveCase; compact?: boolean }> = ({ live
 const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => void }> = ({ liveCase, onSelect }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.08, rootMargin: '50px' });
   const thumbnailUrl = getGoogleDriveThumbnailUrl(liveCase.preTreatmentPhoto);
   const hasImage = !!thumbnailUrl && !imgError;
   const isOnTheWay = liveCase.status.toUpperCase() === 'ON_THE_WAY' || liveCase.status.toUpperCase() === 'IN_PROGRESS';
@@ -150,11 +151,12 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
 
   return (
     <div
+      ref={ref}
       onClick={() => onSelect(liveCase)}
-      className={`masonry-card bg-white rounded-[14px] overflow-hidden shadow-sm border border-transparent hover:border-[#F9E8C9] cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${
+      className={`masonry-card ${isVisible ? 'masonry-card-visible' : 'masonry-card-hidden'} bg-white rounded-[14px] overflow-hidden shadow-sm cursor-pointer group ${
         isOnTheWay ? 'rescue-active' : ''
       }`}
-      style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
+      style={{ willChange: 'transform, opacity' }}
     >
       {/* Image area */}
       <div className="relative">
@@ -166,10 +168,8 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
               loading="lazy"
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgError(true)}
-              className="w-full h-auto group-hover:scale-[1.03] transition-transform duration-500"
+              className="w-full h-auto"
             />
-            {/* Warm gradient overlay on bottom of image */}
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#1C1917]/20 to-transparent pointer-events-none" />
             {/* Shimmer overlay — sits on top until image loads */}
             {!imgLoaded && (
               <div className="absolute inset-0 img-shimmer" />
@@ -177,9 +177,9 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
           </div>
         ) : (
           /* No image placeholder */
-          <div className="w-full bg-gradient-to-br from-[#F5F0EB] to-[#E8E0D8] flex flex-col items-center justify-center" style={{ aspectRatio: '4/5' }}>
+          <div className="w-full bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center" style={{ aspectRatio: '4/5' }}>
             <span className="text-5xl mb-2">{emoji}</span>
-            <span className="text-xs text-[#A8A29E] font-medium">
+            <span className="text-xs text-slate-400 font-medium">
               {isOnTheWay ? 'Rescue in progress...' : 'No photo'}
             </span>
           </div>
@@ -194,7 +194,7 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
                 {liveCase.condition}
               </span>
               {liveCase.caseType === 'FOLLOW_UP_CASE' && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[#B8650A]/80 text-white backdrop-blur-[12px]">
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-purple-600/80 text-white backdrop-blur-[12px]">
                   Follow-up
                 </span>
               )}
@@ -210,7 +210,7 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
             {/* Bottom-left: Status */}
             <div className="absolute bottom-2 left-2">
               <span className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-semibold backdrop-blur-[12px] ${statusOverlayClasses(liveCase.status)}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${liveCase.status.toUpperCase() === 'CASE_COMPLETED' ? 'bg-[#8BB592]' : liveCase.status.toUpperCase() === 'ON_THE_WAY' || liveCase.status.toUpperCase() === 'IN_PROGRESS' ? 'bg-[#F0C590] animate-pulse' : 'bg-white/60'}`}></span>
+                <span className={`w-1.5 h-1.5 rounded-full ${liveCase.status.toUpperCase() === 'CASE_COMPLETED' ? 'bg-green-300' : liveCase.status.toUpperCase() === 'ON_THE_WAY' || liveCase.status.toUpperCase() === 'IN_PROGRESS' ? 'bg-amber-300 animate-pulse' : 'bg-white/60'}`}></span>
                 {formatStatus(liveCase.status)}
               </span>
             </div>
@@ -224,19 +224,19 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 min-w-0 text-sm">
             <span>{emoji}</span>
-            <span className="font-bold text-[#292524] truncate">{liveCase.animalType}</span>
-            <span className="text-[#D6CFC7]">&bull;</span>
-            <span className="text-[#A8A29E] truncate text-xs">{liveCase.siteName}</span>
+            <span className="font-bold text-slate-900 truncate">{liveCase.animalType}</span>
+            <span className="text-slate-300">&bull;</span>
+            <span className="text-slate-400 truncate text-xs">{liveCase.siteName}</span>
           </div>
-          <span className="text-[10px] text-[#A8A29E] whitespace-nowrap ml-2 shrink-0">
+          <span className="text-[10px] text-slate-400 whitespace-nowrap ml-2 shrink-0">
             {formatTimeAgo(liveCase.caseDate)}
           </span>
         </div>
 
         {/* Line 2: Address */}
         {liveCase.address && (
-          <div className="flex items-center gap-1 text-xs text-[#78716C]">
-            <MapPin size={11} className="text-[#A8A29E] shrink-0" />
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <MapPin size={11} className="text-slate-400 shrink-0" />
             <span className="truncate">{liveCase.address}</span>
           </div>
         )}
@@ -244,15 +244,15 @@ const MasonryCard: React.FC<{ liveCase: LiveCase; onSelect: (c: LiveCase) => voi
         {/* Line 3: Observation or dispatch message */}
         {liveCase.doctorObservation ? (
           <div>
-            <p className="text-xs text-[#57534E] line-clamp-2">
+            <p className="text-xs text-slate-600 line-clamp-2">
               {liveCase.doctorObservation}
               {liveCase.affectedBodyPart && (
-                <span className="text-[#A8A29E]"> &middot; {liveCase.affectedBodyPart}</span>
+                <span className="text-slate-400"> &middot; {liveCase.affectedBodyPart}</span>
               )}
             </p>
           </div>
         ) : isOnTheWay ? (
-          <p className="text-xs text-[#B8650A] italic">Team dispatched — awaiting update...</p>
+          <p className="text-xs text-amber-600 italic">Team dispatched — awaiting update...</p>
         ) : null}
 
         {/* Line 4: Recommendation */}
@@ -281,8 +281,7 @@ const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid
     return (
       <div
         onClick={() => onSelect(liveCase)}
-        className="bg-white border border-[#E8E0D8] p-3 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#F9E8C9] cursor-pointer group"
-      style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
+        className="bg-white border border-slate-100 p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
       >
         <div className="flex gap-3">
           {showImage && (
@@ -291,7 +290,7 @@ const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid
               alt={`Case #${liveCase.caseId}`}
               loading="lazy"
               onError={() => setImgError(true)}
-              className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shrink-0 bg-[#F5F0EB] self-center"
+              className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shrink-0 bg-slate-100 self-center"
             />
           )}
           <div className="flex-1 min-w-0">
@@ -306,19 +305,17 @@ const CaseCard: React.FC<CaseCardProps> = ({ liveCase, onSelect, variant = 'grid
   return (
     <div
       onClick={() => onSelect(liveCase)}
-      className="bg-white border border-[#E8E0D8] rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#F9E8C9] cursor-pointer group overflow-hidden"
-      style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
+      className="bg-white border border-slate-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer group overflow-hidden"
     >
       {showImage && (
-        <div className="bg-[#F5F0EB] relative overflow-hidden">
+        <div className="bg-slate-100">
           <img
             src={thumbnailUrl!}
             alt={`Case #${liveCase.caseId}`}
             loading="lazy"
             onError={() => setImgError(true)}
-            className="w-full aspect-[3/2] object-cover group-hover:scale-[1.03] transition-transform duration-500"
+            className="w-full aspect-[3/2] object-cover"
           />
-          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#1C1917]/20 to-transparent pointer-events-none" />
         </div>
       )}
       <div className="p-3">
